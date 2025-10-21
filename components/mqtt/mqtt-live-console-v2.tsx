@@ -230,16 +230,16 @@ export function MQTTLiveConsole() {
                   </div>
 
                   <div className="space-y-1 text-sm">
-                    {fcu.spaceTemp !== undefined && !isNaN(fcu.local_setpoint) && (
+                    {fcu.spaceTemp !== undefined && !isNaN(fcu.Local_Setpoint) && (
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Temp:</span>
-                        <span className="font-semibold">{fcu.local_setpoint.toFixed(1)}°C</span>
+                        <span className="font-semibold">{fcu.Local_Setpoint.toFixed(1)}°C</span>
                       </div>
                     )}
-                    {fcu.effective_setpoint !== undefined && (
+                    {fcu.Effective_Setpoint !== undefined && (
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Setpoint:</span>
-                        <span>{fcu.effective_setpoint.toFixed(1)}°C</span>
+                        <span>{fcu.Effective_Setpoint.toFixed(1)}°C</span>
                       </div>
                     )}
                     <div className="mt-2">
