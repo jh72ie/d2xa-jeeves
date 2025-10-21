@@ -1,0 +1,18 @@
+{
+  "functions": {
+    "app/(chat)/api/chat/route.ts": {
+      "maxDuration": 300
+    },
+    "app/(chat)/api/telemetry/stream/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/telemetry/stream/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/**/*": {
+      "maxDuration": 60
+    }
+  },
+  "regions": ["iad1"],
+  "buildCommand": "pnpm build:without-migrations"
+}

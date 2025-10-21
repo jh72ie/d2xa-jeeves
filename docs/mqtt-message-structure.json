@@ -1,0 +1,102 @@
+{
+  "description": "Sample MQTT message structure from HiveMQ Cloud broker",
+  "topic": "dt/csg/nbc/hvac/fcu/fcunbs01001/measuredvalue",
+  "timestamp": "2025-10-13T10:27:24.090Z",
+  "structure": {
+    "measuredvalue": "gci_level_2_fcu",
+    "version": "4",
+    "timestamp": "ISO 8601 timestamp",
+    "status": {
+      "fCU_201": {
+        "nvoEffectOccup": "ocOccupied {ok}",
+        "nvoEffectSetpt": "22.0 °C {ok}",
+        "nvoSpaceTemp": "22.9 °C {ok}",
+        "nvoHeatOutput": "0.0 % {ok}",
+        "nvoCoolOutput": "0.0 % {ok}",
+        "nvoFanSpeed_state": "stateOn {ok}",
+        "nviSetpoint": "22.5 °C {ok} @ 10"
+      },
+      "fCU_202": {
+        "...": "Similar structure for each FCU"
+      }
+    }
+  },
+  "notes": {
+    "totalFCUs": 49,
+    "fcuIdFormat": "fCU_XXX (e.g., fCU_201, fCU_2_1, fCU_206)",
+    "fieldNaming": "LonWorks convention (nvo prefix = network variable output)",
+    "statusFormat": "value unit {status_flags}",
+    "faultExamples": ["fCU_206", "fCU_218", "fCU_226"],
+    "specialFCUs": {
+      "fCU_212": "Different field structure (Supply_Air_Temp, Return_Air_Temp, etc.)",
+      "fCU_260": "Extended fields with fan speed and manual controls",
+      "fCU_261": "Similar to fCU_260 with additional controls"
+    }
+  },
+  "fcu201Fields": {
+    "available": [
+      "nvoEffectOccup",
+      "nvoEffectSetpt",
+      "nvoSpaceTemp",
+      "nvoHeatOutput",
+      "nvoCoolOutput",
+      "nvoFanSpeed_state",
+      "nviSetpoint"
+    ],
+    "normalizedStreamIds": [
+      "fcu-201-effectoccup",
+      "fcu-201-effectsetpt",
+      "fcu-201-spacetemp",
+      "fcu-201-heatoutput",
+      "fcu-201-cooloutput",
+      "fcu-201-fanspeed_state",
+      "fcu-201-setpoint"
+    ]
+  },
+  "realDataSample": {
+    "success": true,
+    "diagnostics": {
+      "rawMessageKeys": ["measuredvalue", "version", "timestamp", "status"],
+      "hasStatusObject": true,
+      "statusObjectType": "object",
+      "totalFCUs": 49,
+      "allFcuIds": [
+        "fCU_2_1", "fCU_2_3", "fCU_2_4", "fCU_201", "fCU_202", "fCU_203",
+        "fCU_204", "fCU_205", "fCU_206", "fCU_207", "fCU_208", "fCU_209",
+        "fCU_210", "fCU_211", "fCU_212", "fCU_213", "fCU_214", "fCU_215",
+        "fCU_216", "fCU_217", "fCU_218", "fCU_219", "fCU_222", "fCU_223",
+        "fCU_224", "fCU_225", "fCU_226", "fCU_227", "fCU_228", "fCU_229",
+        "fCU_230", "fCU_231", "fCU_233", "fCU_234", "fCU_235", "fCU_236",
+        "fCU_237", "fCU_241", "fCU_242", "fCU_243", "fCU_244", "fCU_245",
+        "fCU_250", "fCU_251", "fCU_257", "fCU_258", "fCU_260", "fCU_261",
+        "fCU_262"
+      ],
+      "hasFCU201": true,
+      "fcu201Keys": [
+        "nvoEffectOccup",
+        "nvoEffectSetpt",
+        "nvoSpaceTemp",
+        "nvoHeatOutput",
+        "nvoCoolOutput",
+        "nvoFanSpeed_state",
+        "nviSetpoint"
+      ],
+      "fcu201Sample": {
+        "id": "fCU_201",
+        "spaceTemp": 22.9,
+        "heatOutput": 0,
+        "coolOutput": 0,
+        "status": "ok",
+        "rawDataKeys": [
+          "nvoEffectOccup",
+          "nvoEffectSetpt",
+          "nvoSpaceTemp",
+          "nvoHeatOutput",
+          "nvoCoolOutput",
+          "nvoFanSpeed_state",
+          "nviSetpoint"
+        ]
+      }
+    }
+  }
+}

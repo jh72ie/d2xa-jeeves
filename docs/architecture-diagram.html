@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Building Analytics Platform - System Architecture</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            sequence: {
+                useMaxWidth: true,
+                wrap: true
+            }
+        });
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .diagram-section {
+            margin-bottom: 60px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 5px solid #667eea;
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .mermaid {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .description {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .description p {
+            margin: 0;
+            color: #856404;
+        }
+
+        footer {
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9em;
+        }
+
+        .toc {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+        }
+
+        .toc h3 {
+            color: #0F4761;
+            margin-bottom: 15px;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc li {
+            margin: 10px 0;
+        }
+
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .toc a:hover {
+            color: #764ba2;
+            padding-left: 10px;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .diagram-section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Intelligent Building Analytics Platform</h1>
+            <p class="subtitle">System Architecture Documentation</p>
+        </header>
+
+        <div class="content">
+            <!-- Table of Contents -->
+            <div class="toc">
+                <h3>📋 Table of Contents</h3>
+                <ul>
+                    <li><a href="#diagram1">1. Complete System Architecture</a></li>
+                    <li><a href="#diagram2">2. Data Flow Sequence</a></li>
+                    <li><a href="#diagram3">3. Component Architecture</a></li>
+                    <li><a href="#diagram4">4. Technology Stack</a></li>
+                    <li><a href="#diagram5">5. Deployment Architecture</a></li>
+                </ul>
+            </div>
+
+            <!-- Diagram 1: Complete System Architecture -->
+            <div class="diagram-section" id="diagram1">
+                <h2>1. Complete System Architecture</h2>
+                <div class="description">
+                    <p><strong>Overview:</strong> This diagram shows the end-to-end flow from physical FCU hardware through MQTT broker, data ingestion, AI analysis, notification processing, to the frontend UI. Color-coded by layer: Physical (blue), MQTT (orange), Workers (purple), Database (green), AI (yellow), Frontend (pink).</p>
+                </div>
+                <div class="mermaid">
+flowchart TB
+    %% Physical Layer
+    subgraph Physical["Physical Layer - Building HVAC"]
+        FCUs["49 Fan Coil Units (FCUs)<br/>LonWorks Protocol<br/>Sensors: Temp, Setpoint, Heat, Cool, Fan"]
+    end
+
+    %% MQTT Broker
+    subgraph MQTT["HiveMQ Cloud MQTT Broker"]
+        Broker["MQTT Broker (Port 8883)<br/>Topic: dt/csg/nbc/hvac/fcu/fcunbs01001/measuredvalue<br/>Frequency: ~5 minutes<br/>TLS Encryption"]
+    end
+
+    %% Data Ingestion
+    subgraph Ingestion["Inngest Background Worker"]
+        FCUWorker["fcu-data-ingestion.ts<br/>Cron: */5 * * * *<br/>• Connect to MQTT<br/>• Parse 49 FCU messages<br/>• Extract FCU-201 data<br/>• Normalize field names<br/>• Filter numeric values<br/>Timeout: 50 seconds"]
+    end
+
+    %% Database
+    subgraph DB["Vercel Postgres Database"]
+        TelemetryTick["TelemetryTick<br/>• sensorId<br/>• ts (timestamp)<br/>• value"]
+        TelemetryAnomaly["TelemetryAnomaly<br/>• anomaly records"]
+        JeevesState["JeevesState<br/>• system config<br/>• monitored streams"]
+        JeevesDiscovery["JeevesDiscovery<br/>• discoveries<br/>• AI reasoning<br/>• evidence"]
+        JeevesNotification["JeevesNotification<br/>• persona notifications<br/>• dashboards"]
+        ActivityLog["JeevesActivityLog<br/>• execution logs"]
+        Cleanup["Cleanup Worker<br/>48h TTL<br/>Daily at 3 AM UTC"]
+    end
+
+    %% AI Discovery Engine
+    subgraph AI["AI Discovery Engine (Anthropic Claude)"]
+        DiscoveryEngine["discovery-engine.ts<br/>• Load persona contexts<br/>• Query telemetry streams<br/>• Run 19 analysis tools<br/>• Generate discoveries<br/>• Identify recipients"]
+
+        subgraph Tools["19 Analysis Tools"]
+            T1["analyzeStreamAnomaliesTool"]
+            T2["correlateTwoStreamsTool"]
+            T3["detectPatternsTool"]
+            T4["calculateStreamStatsTool"]
+            T5["predictNextValuesTool"]
+            T6["...14 more tools"]
+        end
+    end
+
+    %% Notification Processing
+    subgraph Notifications["Inngest Notification Worker"]
+        NotifyWorker["process-notifications.ts<br/>Event: discovery.completed<br/>• Generate personalized notifications<br/>• Create visual dashboards (v0)<br/>• Save to database<br/>• Step functions with retries"]
+    end
+
+    %% Frontend
+    subgraph Frontend["Next.js Frontend (Vercel)"]
+        CommandCenter["/jeeves<br/>Command center<br/>Discoveries display<br/>Activity logs"]
+        MQTTMonitor["/mqtt-monitor<br/>Live charts<br/>SSE streaming<br/>Real-time data"]
+        Chat["/chat<br/>AI chat interface<br/>Natural language queries"]
+        Dashboards["/d/[slug]<br/>Published dashboards<br/>Embedded visualizations"]
+    end
+
+    %% Scheduler
+    subgraph Scheduler["Inngest Auto-Scheduler"]
+        AutoScheduler["jeeves-auto-scheduler<br/>Cron: */5 * * * *<br/>• Check if enabled<br/>• Check if time >= nextAnalysisAt<br/>• Trigger discovery if ready"]
+    end
+
+    %% Data Flow
+    FCUs -->|"MQTT Protocol<br/>TLS (8883)"| Broker
+    Broker -->|"Subscribe<br/>Every 5 min"| FCUWorker
+    FCUWorker -->|"Insert<br/>20-30 streams"| TelemetryTick
+
+    AutoScheduler -->|"Check config"| JeevesState
+    AutoScheduler -->|"Trigger if ready"| DiscoveryEngine
+
+    JeevesState -.->|"Config"| DiscoveryEngine
+    TelemetryTick -.->|"Query data"| DiscoveryEngine
+    JeevesDiscovery -.->|"Recent discoveries"| DiscoveryEngine
+
+    DiscoveryEngine -->|"Use tools"| Tools
+    DiscoveryEngine -->|"Save discoveries"| JeevesDiscovery
+    DiscoveryEngine -->|"Log activity"| ActivityLog
+
+    JeevesDiscovery -->|"Trigger event<br/>discovery.completed"| NotifyWorker
+    NotifyWorker -->|"Save notifications"| JeevesNotification
+    NotifyWorker -->|"Update status"| JeevesDiscovery
+
+    TelemetryTick -.->|"Cleanup old data"| Cleanup
+    TelemetryAnomaly -.->|"Cleanup old data"| Cleanup
+
+    JeevesState -.->|"Load config"| CommandCenter
+    JeevesDiscovery -.->|"Display"| CommandCenter
+    JeevesNotification -.->|"Display"| CommandCenter
+    ActivityLog -.->|"Display"| CommandCenter
+
+    Broker -.->|"SSE stream"| MQTTMonitor
+    TelemetryTick -.->|"Query"| Chat
+    DiscoveryEngine -.->|"AI context"| Chat
+    JeevesNotification -.->|"Embed dashboards"| Dashboards
+
+    %% Styling
+    classDef physical fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    classDef mqtt fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef worker fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef db fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    classDef ai fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    classDef frontend fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+
+    class FCUs physical
+    class Broker mqtt
+    class FCUWorker,NotifyWorker,AutoScheduler worker
+    class TelemetryTick,TelemetryAnomaly,JeevesState,JeevesDiscovery,JeevesNotification,ActivityLog,Cleanup db
+    class DiscoveryEngine,T1,T2,T3,T4,T5,T6 ai
+    class CommandCenter,MQTTMonitor,Chat,Dashboards frontend
+                </div>
+            </div>
+
+            <!-- Diagram 2: Data Flow Sequence -->
+            <div class="diagram-section" id="diagram2">
+                <h2>2. Data Flow Sequence</h2>
+                <div class="description">
+                    <p><strong>Overview:</strong> Step-by-step sequence showing how data flows through the system from FCU hardware publication to user interaction. Shows timing (every 5 minutes), tool usage loop, and parallel notification processing.</p>
+                </div>
+                <div class="mermaid">
+sequenceDiagram
+    participant FCU as FCU-201 Hardware
+    participant MQTT as HiveMQ Cloud
+    participant Ingestion as FCU Data Ingestion
+    participant DB as PostgreSQL
+    participant Scheduler as Auto-Scheduler
+    participant AI as Discovery Engine
+    participant Tools as 19 Analysis Tools
+    participant Notify as Notification Worker
+    participant User as Web UI
+
+    Note over FCU,MQTT: Every 5 minutes
+    FCU->>MQTT: Publish sensor data<br/>(49 FCUs, LonWorks)
+    MQTT->>Ingestion: Message received
+    Ingestion->>Ingestion: Parse FCU-201 data<br/>Normalize field names
+    Ingestion->>DB: Insert 20-30 telemetry ticks
+
+    Note over Scheduler,DB: Every 5 minutes
+    Scheduler->>DB: Check JeevesState<br/>(enabled? time to run?)
+    DB-->>Scheduler: Config + last run time
+
+    alt Analysis needed
+        Scheduler->>AI: Trigger discovery
+        AI->>DB: Load persona contexts
+        AI->>DB: Query monitored streams
+        AI->>DB: Get recent discoveries
+
+        loop Tool usage (max 10 steps)
+            AI->>Tools: Call analysis tool<br/>(anomalies, correlation, patterns)
+            Tools->>DB: Query telemetry data
+            DB-->>Tools: Return data points
+            Tools-->>AI: Analysis result
+        end
+
+        AI->>AI: Generate discoveries<br/>(LLM with 19 tools)
+        AI->>DB: Save JeevesDiscovery
+        AI->>DB: Log to JeevesActivityLog
+
+        AI->>Notify: Trigger event<br/>discovery.completed
+
+        loop For each persona
+            Notify->>DB: Load persona context
+            Notify->>Notify: Generate personalized<br/>notification (LLM)
+            Notify->>Notify: Create dashboard (v0)
+            Notify->>DB: Save JeevesNotification
+        end
+
+        Notify->>DB: Mark discovery as "notified"
+    end
+
+    Note over User,DB: User interaction
+    User->>DB: Load /jeeves page
+    DB-->>User: Discoveries + Notifications<br/>+ Activity logs
+    User->>AI: Chat query
+    AI->>Tools: Use analysis tools
+    AI-->>User: Natural language response
+                </div>
+            </div>
+
+            <!-- Diagram 3: Component Architecture -->
+            <div class="diagram-section" id="diagram3">
+                <h2>3. Component Architecture</h2>
+                <div class="description">
+                    <p><strong>Overview:</strong> Internal code organization showing how backend API routes, server components, Inngest workers, core libraries, and database layer interact. Shows the layered architecture from UI to data persistence.</p>
+                </div>
+                <div class="mermaid">
+graph TB
+    subgraph "Backend (Next.js 15 App Router)"
+        subgraph "API Routes"
+            API1["/api/jeeves/*<br/>State, Analyze, Discoveries"]
+            API2["/api/mqtt/stream<br/>SSE Streaming"]
+            API3["/api/telemetry/*<br/>Data queries"]
+            API4["/api/inngest<br/>Worker registration"]
+        end
+
+        subgraph "Server Components"
+            SC1["JeevesCommandCenter<br/>(RSC)"]
+            SC2["MQTTMonitor<br/>(Client)"]
+            SC3["ChatInterface<br/>(Client + RSC)"]
+        end
+    end
+
+    subgraph "Inngest Workers (Background)"
+        W1["fcu-data-ingestion<br/>Cron: */5 * * * *"]
+        W2["jeeves-auto-scheduler<br/>Cron: */5 * * * *"]
+        W3["process-notifications<br/>Event-driven"]
+        W4["telemetry-cleanup<br/>Cron: 0 3 * * *"]
+    end
+
+    subgraph "Core Libraries"
+        L1["lib/jeeves/discovery-engine.ts<br/>Main AI logic"]
+        L2["lib/monitoring/stream-tools.ts<br/>19 analysis tools"]
+        L3["lib/mqtt/parsers.ts<br/>LonWorks parsing"]
+        L4["lib/inngest/client.ts<br/>Event bus"]
+    end
+
+    subgraph "Database Layer (Drizzle ORM)"
+        D1["schema.ts<br/>Type-safe schema"]
+        D2["queries.ts<br/>Reusable queries"]
+        D3["migrations/<br/>Version control"]
+    end
+
+    API1 --> L1
+    API1 --> D1
+    API2 --> L3
+    API3 --> D2
+    API4 --> W1
+    API4 --> W2
+    API4 --> W3
+    API4 --> W4
+
+    W1 --> L3
+    W1 --> D2
+    W2 --> L1
+    W3 --> L1
+    W4 --> D2
+
+    L1 --> L2
+    L1 --> D2
+    L2 --> D2
+
+    SC1 --> API1
+    SC2 --> API2
+    SC3 --> API1
+                </div>
+            </div>
+
+            <!-- Diagram 4: Technology Stack -->
+            <div class="diagram-section" id="diagram4">
+                <h2>4. Technology Stack</h2>
+                <div class="description">
+                    <p><strong>Overview:</strong> Mind map visualization of all technologies, frameworks, and services used in the platform. Organized by category: Frontend, Backend, AI/ML, and Infrastructure.</p>
+                </div>
+                <div class="mermaid">
+mindmap
+  root((Intelligent Building<br/>Analytics Platform))
+    Frontend
+      Next.js 15
+        App Router
+        React Server Components
+      React 19 RC
+      TypeScript 5.6
+      Tailwind CSS 4.1
+      shadcn/ui
+      Recharts 2.13
+      SSE Streaming
+    Backend
+      Next.js API Routes
+      Vercel Serverless
+      Drizzle ORM 0.34
+      MQTT.js 5.11
+      Inngest 3.30
+    AI/ML
+      Anthropic Claude
+        Sonnet 4.5
+      Vercel AI SDK 5.0
+      19 Analysis Tools
+      Prompt Caching
+        90% token savings
+    Infrastructure
+      Vercel Hosting
+        Postgres DB
+        Serverless Functions
+      HiveMQ Cloud
+        MQTT Broker
+      Inngest Cloud
+        Background Jobs
+      Redis (Optional)
+        Deduplication
+                </div>
+            </div>
+
+            <!-- Diagram 5: Deployment Architecture -->
+            <div class="diagram-section" id="diagram5">
+                <h2>5. Deployment Architecture</h2>
+                <div class="description">
+                    <p><strong>Overview:</strong> Infrastructure view showing how the application is deployed across Vercel Platform, external services (HiveMQ, Anthropic, Inngest), and optional services (Redis, Resend). Shows user access patterns and service communication.</p>
+                </div>
+                <div class="mermaid">
+graph LR
+    subgraph "External Services"
+        HiveMQ["HiveMQ Cloud<br/>MQTT Broker"]
+        Anthropic["Anthropic API<br/>Claude Sonnet 4.5"]
+        InngestCloud["Inngest Cloud<br/>Job Orchestration"]
+    end
+
+    subgraph "Vercel Platform"
+        subgraph "Edge Network"
+            CDN["CDN<br/>Static Assets"]
+        end
+
+        subgraph "Compute"
+            Functions["Serverless Functions<br/>• API Routes<br/>• RSC<br/>• SSE Endpoints"]
+        end
+
+        subgraph "Data"
+            VDB["Vercel Postgres<br/>• 48h TTL<br/>• Automatic cleanup"]
+        end
+    end
+
+    subgraph "Optional Services"
+        Redis["Redis Cloud<br/>Deduplication"]
+        Resend["Resend API<br/>Email Delivery"]
+    end
+
+    User["End Users<br/>Facility Managers<br/>Engineers"]
+
+    HiveMQ -->|"MQTT Data"| Functions
+    Functions -->|"API Calls"| Anthropic
+    Functions -->|"Events"| InngestCloud
+    InngestCloud -->|"Trigger Workers"| Functions
+    Functions <-->|"Read/Write"| VDB
+    Functions -.->|"Optional"| Redis
+    Functions -.->|"Optional"| Resend
+
+    User -->|"HTTPS"| CDN
+    User -->|"API/SSE"| Functions
+    CDN -->|"Dynamic"| Functions
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>Intelligent Building Analytics Platform</strong></p>
+            <p>Architecture Documentation • Generated: October 13, 2025</p>
+            <p>System Version: 2.0 (Production Ready)</p>
+        </footer>
+    </div>
+</body>
+</html>

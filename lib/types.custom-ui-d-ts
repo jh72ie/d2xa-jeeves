@@ -1,0 +1,9 @@
+declare module "ai" {
+  interface UIMessageDataByType {
+    // Custom UI event for showing the TelemetryPanel
+    "data-telemetryShow": {
+      sensorId: string;
+      personaName?: string;
+    };
+  }
+}
