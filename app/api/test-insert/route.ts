@@ -14,7 +14,7 @@ export async function GET() {
 
     // Insert a test FCU-01_04 stream
     const result = await insertTick({
-      sensorId: 'fcu-01_04-test-spacetemp',
+      sensorId: 'fcu-01_04-test-h_o_a',
       ts: new Date(),
       value: 22.5,
     });
