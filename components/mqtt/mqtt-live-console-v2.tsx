@@ -230,7 +230,7 @@ export function MQTTLiveConsole() {
                   </div>
 
                   <div className="space-y-1 text-sm">
-                    {fcu.spaceTemp !== undefined && !isNaN(fcu.Local_Setpoint) && (
+                    {fcu.Local_Setpoint !== undefined && !isNaN(fcu.Local_Setpoint) && (
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Temp:</span>
                         <span className="font-semibold">{fcu.Local_Setpoint.toFixed(1)}°C</span>
