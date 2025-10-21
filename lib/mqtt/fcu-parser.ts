@@ -43,7 +43,7 @@ export interface FCUStatus {
   Enable_Heating_Override: string;
   FCU_Clg_Exercise_Failure: string;
   FCU_Htg_Exercise_Failure: string;
-  ////////////////////////////
+  ////////////////////////////   -leave these here so that the old code will still run. hopefully
   occupancy?: string;
   spaceTemp?: number;
   effectiveSetpoint?: number;
