@@ -21,7 +21,7 @@ const MQTT_CONFIG = {
   topic: 'dt/csg/nbc/hvac/fcu/fcunbs01001/measuredvalue',
 };
 
-const TARGET_FCU = 'fCU_201';
+const TARGET_FCU = 'fCU_01_04';
 const REDIS_TIMESTAMP_KEY = `fcu:${TARGET_FCU}:last-timestamp`;
 const REDIS_LATEST_KEY = 'mqtt:fcu:latest';
 
@@ -179,7 +179,7 @@ export async function GET(): Promise<Response> {
             for (const [fieldName, fieldValue] of Object.entries(targetFCU.rawData)) {
               const numericValue = extractNumericValue(fieldValue);
               if (numericValue !== null) {
-                const streamId = `fcu-201-${normalizeFieldName(fieldName)}`;
+                const streamId = `fcu-01_04-${normalizeFieldName(fieldName)}`;
                 insertPromises.push(
                   insertTick({
                     sensorId: streamId,
@@ -230,7 +230,7 @@ export async function GET(): Promise<Response> {
 
             for (const [metricName, value] of derivedMetrics) {
               if (value !== undefined && !isNaN(value)) {
-                const streamId = `fcu-201-${metricName}`;
+                const streamId = `fcu-01_04-${metricName}`;
                 insertPromises.push(
                   insertTick({
                     sensorId: streamId,

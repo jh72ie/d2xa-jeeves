@@ -12,9 +12,9 @@ export async function GET() {
   try {
     console.log('[Test Insert] Starting test insertion...');
 
-    // Insert a test FCU-201 stream
+    // Insert a test FCU-01_04 stream
     const result = await insertTick({
-      sensorId: 'fcu-201-test-spacetemp',
+      sensorId: 'fcu-01_04-test-spacetemp',
       ts: new Date(),
       value: 22.5,
     });

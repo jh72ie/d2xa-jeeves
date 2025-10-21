@@ -347,8 +347,8 @@ Make it IMPRESSIVE!
   const accessToken = generateAccessToken();
 
   // Generate dashboard script
-  // Use real FCU-201 streams from evidence, or default to spacetemp if missing
-  const streams = discovery.evidence?.streams || ['fcu-201-spacetemp'];
+  // Use real FCU-01_04 streams from evidence, or default to spacetemp if missing
+  const streams = discovery.evidence?.streams || ['fcu-01_04-spacetemp'];
   const script = generateDashboardScript(cardId, streams, discovery);
 
   // Publish to database

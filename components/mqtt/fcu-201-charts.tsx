@@ -53,7 +53,7 @@ export function FCU201Charts() {
     setError(null);
 
     try {
-      const response = await fetch('/api/telemetry/fcu-201');
+      const response = await fetch('/api/telemetry/fcu-01_04');
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -67,7 +67,7 @@ export function FCU201Charts() {
         setLastUpdate(result.timestamp);
       }
     } catch (err: any) {
-      console.error('[FCU-201 Charts] Fetch error:', err);
+      console.error('[FCU-01_04 Charts] Fetch error:', err);
       setError(err.message || 'Failed to fetch data');
     } finally {
       setIsLoading(false);
@@ -111,7 +111,7 @@ export function FCU201Charts() {
         const dataPoint = stream.data.find(d => d.timestamp === timestamp);
         if (dataPoint) {
           // Use short stream name for legend
-          const shortName = stream.streamId.replace('fcu-201-', '').replace('parsed-', '');
+          const shortName = stream.streamId.replace('fcu-01_04-', '').replace('parsed-', '');
           point[shortName] = dataPoint.value;
         }
       });
@@ -143,7 +143,7 @@ export function FCU201Charts() {
               <Tooltip />
               <Legend wrapperStyle={{ fontSize: '12px' }} />
               {streams.map((stream, idx) => {
-                const shortName = stream.streamId.replace('fcu-201-', '').replace('parsed-', '');
+                const shortName = stream.streamId.replace('fcu-01_04-', '').replace('parsed-', '');
                 return (
                   <Line
                     key={stream.streamId}
@@ -225,7 +225,7 @@ export function FCU201Charts() {
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
             {isLoading ? (
-              <p>Loading FCU-201 data...</p>
+              <p>Loading FCU-01_04 data...</p>
             ) : (
               <p>Waiting for data...</p>
             )}

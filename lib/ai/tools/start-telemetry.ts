@@ -17,7 +17,7 @@ export function startTelemetryTool({
       sensorId: z.string().optional(),
     }),
     execute: async ({ sensorId }) => {
-      const sid = sensorId || defaultSensorId || "fcu-201-spacetemp";
+      const sid = sensorId || defaultSensorId || "fcu-01_04-spacetemp";
 
       // Emit the custom, strongly-typed UI event
       dataStream.write({

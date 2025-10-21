@@ -1,7 +1,7 @@
 /**
  * Real-time FCU Data Stream API
  *
- * Streams REAL FCU-201 data from database (not simulated!)
+ * Streams REAL FCU-01_04 data from database (not simulated!)
  * Used by dashboards for live updates
  */
 

@@ -16,8 +16,8 @@ USAGE PATTERN:
 3. Use api.replaceSlot(slotId, html) to update UI
 
 EXAMPLE (2 streams max):
-api.subscribe('/api/telemetry/stream?streamId=fcu-201-spacetemp&intervalMs=5000');
-api.subscribe('/api/telemetry/stream?streamId=fcu-201-effectsetpt&intervalMs=5000');
+api.subscribe('/api/telemetry/stream?streamId=fcu-01_04-spacetemp&intervalMs=5000');
+api.subscribe('/api/telemetry/stream?streamId=fcu-01_04-effectsetpt&intervalMs=5000');
 api.on('tick', (data) => {
   const temp = data.value;
   api.replaceSlot('current-temp', temp.toFixed(1) + '°C');

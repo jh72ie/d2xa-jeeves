@@ -51,7 +51,7 @@ CRITICAL RULES:
 
 NEVER treat binary occupancy (0/1) as a people counter!`,
   inputSchema: z.object({
-    streamId: z.string().describe("EXACT stream identifier from listAvailableStreamsTool (e.g., 'fcu-201-spacetemp', 'fcu-201-heatoutput'). Do NOT guess or modify names!"),
+    streamId: z.string().describe("EXACT stream identifier from listAvailableStreamsTool (e.g., 'fcu-01_04-spacetemp', 'fcu-01_04-heatoutput'). Do NOT guess or modify names!"),
     count: z.number().optional().default(100).describe("Number of recent data points to retrieve")
   }),
   execute: async ({ streamId, count }) => {

@@ -4,7 +4,7 @@
  * Connects to MQTT broker every minute and saves FCU data to database
  * for Jeeves analysis.
  *
- * STRATEGY: Start with ONE FCU (FCU-201) and save ALL its fields as streams
+ * STRATEGY: Start with ONE FCU (FCU-01_04) and save ALL its fields as streams
  * This allows deep analysis of one unit before scaling to all 49 FCUs.
  */
 
@@ -309,7 +309,7 @@ export const fcuDataIngestion = inngest.createFunction(
 
                 // Only save numeric values (Jeeves analyzes numbers)
                 if (numericValue !== null) {
-                  const streamId = `fcu-201-${normalizeFieldName(fieldName)}`;
+                  const streamId = `fcu-01_04-${normalizeFieldName(fieldName)}`;
 
                   insertPromises.push(
                     insertTick({
@@ -363,7 +363,7 @@ export const fcuDataIngestion = inngest.createFunction(
       
               for (const [metricName, value] of derivedMetrics) {
                 if (value !== undefined && !isNaN(value)) {
-                  const streamId = `fcu-201-${metricName}`;
+                  const streamId = `fcu-01_04-${metricName}`;
                   insertPromises.push(
                     insertTick({
                       sensorId: streamId,

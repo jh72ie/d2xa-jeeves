@@ -380,18 +380,18 @@ export async function listAvailableStreams(): Promise<StreamMetadata[]> {
     return streamInfos.filter(info => info !== null) as StreamMetadata[];
   } catch (error) {
     console.error('[Stream Discovery] Failed to list streams:', error);
-    // Fallback: Try to find FCU-201 streams
+    // Fallback: Try to find FCU-01_04 streams
     try {
       const fallbackResult = await db
         .selectDistinct({ sensorId: TelemetryTick.sensorId })
         .from(TelemetryTick)
-        .where(sql`${TelemetryTick.sensorId} LIKE 'fcu-201-%'`)
+        .where(sql`${TelemetryTick.sensorId} LIKE 'fcu-01_04-%'`)
         .limit(50);
 
       const fallbackStreamIds = fallbackResult.map(r => r.sensorId);
 
       if (fallbackStreamIds.length > 0) {
-        console.log(`[Stream Discovery] Fallback found ${fallbackStreamIds.length} FCU-201 streams`);
+        console.log(`[Stream Discovery] Fallback found ${fallbackStreamIds.length} FCU-01_04 streams`);
         const streamInfos = await Promise.all(
           fallbackStreamIds.map(async streamId => {
             try {

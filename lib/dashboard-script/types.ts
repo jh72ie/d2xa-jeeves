@@ -2,7 +2,7 @@ export type ScriptTarget = { slotId?: string; selector?: string };
 
 export type ScriptSubscribeArgs = {
   id: string;        // subscription key (unique within the script)
-  url: string;       // SSE URL, e.g., /api/telemetry/stream?streamId=fcu-201-spacetemp
+  url: string;       // SSE URL, e.g., /api/telemetry/stream?streamId=fcu-01_04-spacetemp
   event?: string;    // SSE event name, default "tick"
 };
 

@@ -106,7 +106,7 @@ def on_message(client, userdata, msg):
             print(f"   ... See complete data in: {filename}")
         print(f"   {'='*76}")
 
-        # Extract FCU-201 data to see actual values
+        # Extract FCU-01_04 data to see actual values
 #        if 'status' in payload and 'fCU_201' in payload['status']:
         if 'status' in payload and 'fCU_01_04' in payload['status']:
             the_fcu = payload['status']['fCU_01_04']
@@ -155,24 +155,26 @@ def on_message(client, userdata, msg):
             print(f"\n   🌡️  {the_fcu} RAW VALUES:")
 
             # Temperature sensors
-            print(f"      Space Temp (nvoSpaceTemp):     {parse_value(the_fcu.get('nvoSpaceTemp'))}")
-            print(f"      Effective Setpoint:             {parse_value(the_fcu.get('nvoEffectSetpt'))}")
-            print(f"      User Setpoint (nviSetpoint):    {parse_value(the_fcu.get('nviSetpoint'))}")
-            print(f"      Supply Temp (nvoSupplyTemp):    {parse_value(the_fcu.get('nvoSupplyTemp'))}")
+            print(f"      Supply Temp (Supply_Air_Temp):    {parse_value(the_fcu.get('Supply_Air_Temp'))}")
+            print(f"      Return Air Temp (Return_Air_Temp):    {parse_value(the_fcu.get('Return_Air_Temp'))}")
+            print(f"      Local Setpoint (Local_Setpoint):    {parse_value(the_fcu.get('Local_Setpoint'))}")
+            print(f"      Wall Adjuster (Wall_Adjuster):    {parse_value(the_fcu.get('Wall_Adjuster'))}")
+            print(f"      Effective Setpoint (Effective_Setpoint):    {parse_value(the_fcu.get('Effective_Setpoint'))}")
+
 
             # Valve outputs (check both possible names)
-            heat_val = the_fcu.get('nvoHeatOutput') or the_fcu.get('nvoHeatPrimary') or the_fcu.get('nvoHeatOut')
-            cool_val = the_fcu.get('nvoCoolOutput') or the_fcu.get('nvoCoolPrimary') or the_fcu.get('nvoCoolOut')
+            heat_val = the_fcu.get('Heating_Override_%') or the_fcu.get('Heating_Valve_Position') 
+            cool_val = the_fcu.get('Cooling_Override_%') or the_fcu.get('Cooling_Valve_Position')
             print(f"      Heat Output:                    {parse_value(heat_val)}")
             print(f"      Cool Output:                    {parse_value(cool_val)}")
 
             # Fan (check both possible names)
-            fan_val = the_fcu.get('nvoFanSpeed') or the_fcu.get('nvoFanSpeed_state')
-            print(f"      Fan Speed:                      {parse_value(fan_val)}")
+            print(f"      Fan Status:                      {parse_value(the_fcu.get('Fan_Status'))}")
+            print(f"      Fan Fault:                      {parse_value(the_fcu.get('Fan_Fault'))}")
 
-            # Occupancy (check both possible names)
+            # # Occupancy (check both possible names)
             occup_val = the_fcu.get('nvoOccup') or the_fcu.get('nvoEffectOccup')
-            print(f"      Occupancy:                      {parse_value(occup_val)}")
+            print(f"      Occupation Status:                      {parse_value(the_fcu.get('Occupation_Status'))}")
 
             # Show ALL fields count and list them
             print(f"\n      📊 Total fields in message: {len(the_fcu)}")
@@ -210,8 +212,8 @@ def on_message(client, userdata, msg):
 
             # Check for the setpoint gap mystery
             try:
-                user_sp = extractNumericValue(the_fcu.get('nviSetpoint'))
-                eff_sp = extractNumericValue(the_fcu.get('nvoEffectSetpt'))
+                user_sp = extractNumericValue(the_fcu.get('Local_Setpoint'))
+                eff_sp = extractNumericValue(the_fcu.get('Effective_Setpoint'))
                 if user_sp and eff_sp and abs(user_sp - eff_sp) > 0.1:
                     print(f"         ⚠️  SETPOINT GAP: {abs(user_sp - eff_sp):.1f}°C (User: {user_sp}°C, Effective: {eff_sp}°C)")
             except Exception as e:

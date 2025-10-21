@@ -172,7 +172,7 @@ def create_report():
     p.add_run('Phase 1: Data Collection (Every 5 Minutes)').bold = True
     doc.add_paragraph('• FCU hardware publishes sensor readings to MQTT broker')
     doc.add_paragraph('• Background worker connects and retrieves data from all 49 units')
-    doc.add_paragraph('System extracts and normalizes FCU-201 data (focus unit for deep analysis)')
+    doc.add_paragraph('System extracts and normalizes FCU-01_04 data (focus unit for deep analysis)')
     doc.add_paragraph('• Data stored in database as individual telemetry streams')
     doc.add_paragraph('• Result: 20-30 data points collected per cycle')
 
@@ -362,7 +362,7 @@ def create_report():
 
     p = doc.add_paragraph()
     p.add_run('Single FCU Focus').bold = True
-    doc.add_paragraph('• Current: Only FCU-201 data ingested for deep analysis')
+    doc.add_paragraph('• Current: Only FCU-01_04 data ingested for deep analysis')
     doc.add_paragraph('Future: Expand to 5-10 interesting units (normal + faulty)')
 
     doc.add_paragraph()

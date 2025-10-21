@@ -16,7 +16,7 @@ flowchart TB
 
     %% Data Ingestion
     subgraph Ingestion["Inngest Background Worker"]
-        FCUWorker["fcu-data-ingestion.ts<br/>Cron: */5 * * * *<br/>• Connect to MQTT<br/>• Parse 49 FCU messages<br/>• Extract FCU-201 data<br/>• Normalize field names<br/>• Filter numeric values<br/>Timeout: 50 seconds"]
+        FCUWorker["fcu-data-ingestion.ts<br/>Cron: */5 * * * *<br/>• Connect to MQTT<br/>• Parse 49 FCU messages<br/>• Extract FCU-01_04 data<br/>• Normalize field names<br/>• Filter numeric values<br/>Timeout: 50 seconds"]
     end
 
     %% Database
@@ -115,7 +115,7 @@ flowchart TB
 
 ```mermaid
 sequenceDiagram
-    participant FCU as FCU-201 Hardware
+    participant FCU as FCU-01_04 Hardware
     participant MQTT as HiveMQ Cloud
     participant Ingestion as FCU Data Ingestion
     participant DB as PostgreSQL
@@ -128,7 +128,7 @@ sequenceDiagram
     Note over FCU,MQTT: Every 5 minutes
     FCU->>MQTT: Publish sensor data<br/>(49 FCUs, LonWorks)
     MQTT->>Ingestion: Message received
-    Ingestion->>Ingestion: Parse FCU-201 data<br/>Normalize field names
+    Ingestion->>Ingestion: Parse FCU-01_04 data<br/>Normalize field names
     Ingestion->>DB: Insert 20-30 telemetry ticks
 
     Note over Scheduler,DB: Every 5 minutes

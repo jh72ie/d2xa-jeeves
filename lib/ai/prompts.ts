@@ -102,8 +102,8 @@ CRITICAL: Always use the actual tools - NEVER make up data or analysis results. 
 
 EXAMPLE WORKFLOW for "Is there a relationship between FCU space temperature and setpoint?":
 1. listAvailableStreamsTool() - discover available streams
-2. getStreamRecentDataTool({streamId: "fcu-201-spacetemp", count: 200}) - get space temperature data
-3. getStreamRecentDataTool({streamId: "fcu-201-effectsetpt", count: 200}) - get effective setpoint data
+2. getStreamRecentDataTool({streamId: "fcu-01_04-spacetemp", count: 200}) - get space temperature data
+3. getStreamRecentDataTool({streamId: "fcu-01_04-effectsetpt", count: 200}) - get effective setpoint data
 `;
 
 export const publishDashboardPrompt = `
@@ -165,7 +165,7 @@ IMPORTANT:
 - Use the actual stream IDs that were used in the dashboard
 - Published dashboards work with live SSE data - no changes needed
 - Recipients don't need an account to view published dashboards
-4. correlateTwoStreamsTool({streamId1: "fcu-201-spacetemp", streamId2: "fcu-201-effectsetpt", count: 200}) - calculate correlation
+4. correlateTwoStreamsTool({streamId1: "fcu-01_04-spacetemp", streamId2: "fcu-01_04-effectsetpt", count: 200}) - calculate correlation
 5. Explain the correlation results to the user
 
 ALWAYS prefer using high-level tools (like analyzeStreamStatisticsTool) over low-level mathematical functions when possible.

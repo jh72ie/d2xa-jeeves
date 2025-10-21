@@ -17,7 +17,7 @@
 
 Jeeves is an AI-powered butler for building management systems. It continuously monitors HVAC Fan Coil Units (FCUs), analyzes telemetry data, discovers anomalies, and notifies relevant stakeholders with personalized insights.
 
-**Current Focus:** FCU-201 monitoring with real-time data ingestion from MQTT broker.
+**Current Focus:** FCU-01_04 monitoring with real-time data ingestion from MQTT broker.
 
 ## Features
 
@@ -52,7 +52,7 @@ Jeeves is an AI-powered butler for building management systems. It continuously 
 ### Data Flow
 
 ```
-FCU-201 Hardware
+FCU-01_04 Hardware
     ↓
 HiveMQ Cloud MQTT Broker
     ↓
@@ -220,7 +220,7 @@ pnpm db:studio
 ## Current Status
 
 ### ✅ Implemented
-- MQTT data ingestion (FCU-201)
+- MQTT data ingestion (FCU-01_04)
 - Real-time charts with SSE
 - Jeeves autonomous analysis
 - Discovery logging and storage
@@ -230,7 +230,7 @@ pnpm db:studio
 - Field name flexibility (handles FCU mode changes)
 
 ### 🚧 In Progress
-- Expanding to all 49 FCUs (currently focusing on FCU-201)
+- Expanding to all 49 FCUs (currently focusing on FCU-01_04)
 - Email notifications via Resend
 - Advanced anomaly detection algorithms
 

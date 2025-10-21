@@ -121,7 +121,7 @@ NEVER treat binary occupancy (0/1) as a people counter!`,
         totalCount: filteredStreams.length,
         totalAvailable: streams.length,
         categories: Array.from(new Set(streams.map(s => s.category))),
-        note: "Dynamically discovered from database - real FCU-201 data streams"
+        note: "Dynamically discovered from database - real FCU-01_04 data streams"
       };
     }
   });

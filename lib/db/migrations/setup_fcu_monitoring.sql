@@ -1,13 +1,13 @@
 -- ============================================================================
--- FCU-201 Monitoring Setup
+-- FCU-01_04 Monitoring Setup
 --
 -- This script:
--- 1. Configures Jeeves to monitor FCU-201 streams
+-- 1. Configures Jeeves to monitor FCU-01_04 streams
 -- 2. Creates index for faster queries
 -- 3. Sets up automatic 48-hour data cleanup
 -- ============================================================================
 
--- Step 1: Configure Jeeves to monitor all FCU-201 streams
+-- Step 1: Configure Jeeves to monitor all FCU-01_04 streams
 -- Note: Run this AFTER the ingestion worker has created some data
 -- This version handles the case where no data exists yet (returns empty array)
 
@@ -16,7 +16,7 @@ SET "monitoredStreams" = COALESCE(
   (
     SELECT to_jsonb(array_agg(DISTINCT "sensorId"))
     FROM "TelemetryTick"
-    WHERE "sensorId" LIKE 'fcu-201-%'
+    WHERE "sensorId" LIKE 'fcu-01_04-%'
       AND "ts" > NOW() - INTERVAL '1 hour'
   ),
   '[]'::jsonb  -- Return empty array if no streams found
@@ -29,10 +29,10 @@ SELECT "monitoredStreams" FROM "JeevesState";
 SELECT jsonb_array_length("monitoredStreams") as stream_count
 FROM "JeevesState";
 
--- Step 2: Create index for faster FCU-201 queries
+-- Step 2: Create index for faster FCU-01_04 queries
 CREATE INDEX IF NOT EXISTS idx_telemetry_fcu201_ts
 ON "TelemetryTick" ("sensorId", "ts" DESC)
-WHERE "sensorId" LIKE 'fcu-201-%';
+WHERE "sensorId" LIKE 'fcu-01_04-%';
 
 -- Step 3: Create index for timestamp-based cleanup
 CREATE INDEX IF NOT EXISTS idx_telemetry_ts_cleanup
@@ -61,7 +61,7 @@ WHERE "ts" < NOW() - INTERVAL '48 hours';
 -- USEFUL QUERIES
 -- ============================================================================
 
--- Check FCU-201 streams and data points
+-- Check FCU-01_04 streams and data points
 SELECT
   "sensorId",
   COUNT(*) as data_points,
@@ -69,7 +69,7 @@ SELECT
   MAX("ts") as newest,
   MAX("ts") - MIN("ts") as time_span
 FROM "TelemetryTick"
-WHERE "sensorId" LIKE 'fcu-201-%'
+WHERE "sensorId" LIKE 'fcu-01_04-%'
 GROUP BY "sensorId"
 ORDER BY "sensorId";
 
@@ -94,13 +94,13 @@ FROM "TelemetryTick"
 GROUP BY age_bucket
 ORDER BY age_bucket;
 
--- Get latest values for all FCU-201 streams
+-- Get latest values for all FCU-01_04 streams
 SELECT DISTINCT ON ("sensorId")
   "sensorId",
   "value",
   "ts"
 FROM "TelemetryTick"
-WHERE "sensorId" LIKE 'fcu-201-%'
+WHERE "sensorId" LIKE 'fcu-01_04-%'
 ORDER BY "sensorId", "ts" DESC;
 
 -- ============================================================================

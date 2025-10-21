@@ -89,7 +89,7 @@ User: Why is this flagged as high severity?
 
 Jeeves: This discovery has high severity for three key reasons:
 
-1. **Impact Scope**: The issue affects FCU-201's heating output, which directly impacts occupant comfort for 15+ people in the east wing.
+1. **Impact Scope**: The issue affects FCU-01_04's heating output, which directly impacts occupant comfort for 15+ people in the east wing.
 
 2. **Persistence**: The pattern has been consistent for 3+ hours, suggesting it's not a transient glitch but a systemic issue.
 
@@ -105,7 +105,7 @@ User: What should I do first?
 Jeeves: I recommend this action sequence:
 
 1. **Immediate (Next 5 minutes)**:
-   - Check FCU-201's physical control panel for error codes
+   - Check FCU-01_04's physical control panel for error codes
    - Verify the room temperature reading matches the sensor (could be sensor drift)
 
 2. **Short-term (Next hour)**:
@@ -132,7 +132,7 @@ Jeeves: Based on my analysis, this is **very likely a real issue** (95% confiden
 
 **What makes me confident it's not a false positive:**
 - Data quality score: 0.98 (no missing values, no suspicious outliers)
-- Cross-validation with adjacent FCUs: They're behaving normally, so it's localized to FCU-201
+- Cross-validation with adjacent FCUs: They're behaving normally, so it's localized to FCU-01_04
 - Occupancy sensor confirms room is occupied (so unusual pattern isn't due to empty room)
 
 I'd recommend treating this as a real issue and investigating further. The cost of checking is low, but the cost of ignoring could be high (occupant complaints + energy waste).

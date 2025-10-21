@@ -5,20 +5,20 @@
 UPDATE "JeevesState"
 SET "monitoredStreams" = ARRAY[
   -- Direct MQTT streams (raw sensor data)
-  'fcu-201-effectsetpt',      -- Effective setpoint temperature
-  'fcu-201-spacetemp',         -- Current space temperature
-  'fcu-201-heatoutput',        -- Heat valve output %
-  'fcu-201-cooloutput',        -- Cool valve output %
-  'fcu-201-setpoint',          -- User setpoint
-  'fcu-201-effectoccup',       -- Occupancy state (enum converted to numeric)
-  'fcu-201-fanspeedstate',     -- Fan state (enum converted to numeric)
+  'fcu-01_04-effectsetpt',      -- Effective setpoint temperature
+  'fcu-01_04-spacetemp',         -- Current space temperature
+  'fcu-01_04-heatoutput',        -- Heat valve output %
+  'fcu-01_04-cooloutput',        -- Cool valve output %
+  'fcu-01_04-setpoint',          -- User setpoint
+  'fcu-01_04-effectoccup',       -- Occupancy state (enum converted to numeric)
+  'fcu-01_04-fanspeedstate',     -- Fan state (enum converted to numeric)
   -- Parsed streams (processed by ingestion worker)
-  'fcu-201-parsed-spacetemp',
-  'fcu-201-parsed-effectsetpoint',
-  'fcu-201-parsed-usersetpoint',
-  'fcu-201-parsed-heatoutput',
-  'fcu-201-parsed-cooloutput',
-  'fcu-201-parsed-status'
+  'fcu-01_04-parsed-spacetemp',
+  'fcu-01_04-parsed-effectsetpoint',
+  'fcu-01_04-parsed-usersetpoint',
+  'fcu-01_04-parsed-heatoutput',
+  'fcu-01_04-parsed-cooloutput',
+  'fcu-01_04-parsed-status'
 ],
 "updatedAt" = NOW()
 WHERE id IS NOT NULL;

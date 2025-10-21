@@ -155,7 +155,7 @@ export async function GET(request: NextRequest) {
 
           // Extract sensor data from FCU message
           if (data.status) {
-            const targetFCU = 'fCU_201'; // Focus on FCU-201
+            const targetFCU = 'fCU-01_04'; // Focus on FCU-01_04
 
             // Filter to specific FCU or requested sensor
             const fcuId = sensorId || targetFCU;
@@ -168,7 +168,7 @@ export async function GET(request: NextRequest) {
                 const numericValue = extractNumericValue(fieldValue);
 
                 if (numericValue !== null) {
-                  const streamId = `fcu-201-${normalizeFieldName(fieldName)}`;
+                  const streamId = `fcu-01_04-${normalizeFieldName(fieldName)}`;
 
                   sendEvent('tick', {
                     sensorId: streamId,

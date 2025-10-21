@@ -32,14 +32,14 @@ This Python script connects directly to the MQTT broker to answer:
 📩 Message #1 at 13:20:00
    📅 Data timestamp: 2025-10-13T13:20:24.075Z
    ✨ NEW DATA
-   🌡️  FCU-201 VALUES:
+   🌡️  FCU-01_04 VALUES:
       Space Temp:     23.2 °C {ok}
       Setpoint:       22.0 °C {ok}
 
 📩 Message #2 at 13:21:00
    📅 Data timestamp: 2025-10-13T13:21:24.075Z
    ✨ NEW DATA
-   🌡️  FCU-201 VALUES:
+   🌡️  FCU-01_04 VALUES:
       Space Temp:     23.4 °C {ok}  ← CHANGED!
       Setpoint:       22.0 °C {ok}
 ```
@@ -63,14 +63,14 @@ This Python script connects directly to the MQTT broker to answer:
 📩 Message #1 at 13:20:00
    📅 Data timestamp: 2025-10-13T13:20:24.075Z
    ✨ NEW DATA
-   🌡️  FCU-201 VALUES:
+   🌡️  FCU-01_04 VALUES:
       Space Temp:     23.2 °C {ok}
       Setpoint:       22.0 °C {ok}
 
 📩 Message #2 at 13:25:00
    📅 Data timestamp: 2025-10-13T13:25:24.075Z
    ✨ NEW DATA (timestamp changed)
-   🌡️  FCU-201 VALUES:
+   🌡️  FCU-01_04 VALUES:
       Space Temp:     23.2 °C {ok}  ← SAME VALUE!
       Setpoint:       22.0 °C {ok}  ← SAME VALUE!
 ```
@@ -84,13 +84,13 @@ This Python script connects directly to the MQTT broker to answer:
 📩 Message #1 at 13:20:00
    📅 Data timestamp: 2025-10-13T13:20:24.075Z
    ✨ NEW DATA
-   🌡️  FCU-201 VALUES:
+   🌡️  FCU-01_04 VALUES:
       Space Temp:     23.2 °C {ok}
 
 📩 Message #2 at 13:20:05
    📅 Data timestamp: 2025-10-13T13:20:24.075Z
    🔁 DUPLICATE DATA (same timestamp)
-   🌡️  FCU-201 VALUES:
+   🌡️  FCU-01_04 VALUES:
       Space Temp:     23.2 °C {ok}  ← Same timestamp = Same values
 ```
 → **Result**: Broker itself is sending duplicates (MQTT QoS behavior)
@@ -102,7 +102,7 @@ This Python script connects directly to the MQTT broker to answer:
 - **⏱️ Time since last** - Seconds since previous message arrived
 - **✨ NEW DATA** - Data timestamp changed (fresh data)
 - **🔁 DUPLICATE DATA** - Same timestamp as before (duplicate)
-- **🌡️ FCU-201 VALUES** - Actual sensor readings:
+- **🌡️ FCU-01_04 VALUES** - Actual sensor readings:
   - **Space Temp** - Current room temperature
   - **Setpoint** - Target temperature (effective setpoint)
   - **User Setpoint** - User-configured cooling setpoint
@@ -113,7 +113,7 @@ This Python script connects directly to the MQTT broker to answer:
 
 ### Real-Time Console Output
 - Live message tracking with timestamps
-- FCU-201 detailed analysis (temperature, setpoints, HVAC status)
+- FCU-01_04 detailed analysis (temperature, setpoints, HVAC status)
 - Field name enumeration (shows all available data points)
 - Setpoint gap detection
 - HVAC status analysis (heating/cooling/idle)
@@ -127,7 +127,7 @@ mqtt_payload_20251013_200051.json
 ```
 
 Each file contains:
-- **All 49 FCUs** (not just FCU-201)
+- **All 49 FCUs** (not just FCU-01_04)
 - **All fields** for each FCU
 - **Complete metadata** (timestamp, version, etc.)
 

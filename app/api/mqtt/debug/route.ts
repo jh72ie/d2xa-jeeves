@@ -2,7 +2,7 @@
  * MQTT Debug Endpoint
  *
  * Connects to MQTT once and returns raw message + parsed FCU IDs
- * to debug why ingestion worker isn't finding FCU-201
+ * to debug why ingestion worker isn't finding FCU-01_04
  */
 
 import { NextResponse } from 'next/server';

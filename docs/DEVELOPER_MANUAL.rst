@@ -28,7 +28,7 @@ Jeeves is an AI-powered autonomous HVAC monitoring system that:
 * Creates visual dashboards automatically
 * Provides chat interface for queries
 
-**Primary Focus:** FCU-201 deep analysis before scaling to all units
+**Primary Focus:** FCU-01_04 deep analysis before scaling to all units
 
 1.2 Technology Stack
 ----------------------------------------------------------------
@@ -103,7 +103,7 @@ Jeeves is an AI-powered autonomous HVAC monitoring system that:
 ::
 
     ┌─────────────────────────────────────────────────────────┐
-    │                   FCU-201 Hardware                       │
+    │                   FCU-01_04 Hardware                       │
     │              (Fan Coil Unit - Building HVAC)             │
     └──────────────────────┬──────────────────────────────────┘
                            │ LonWorks Protocol
@@ -122,7 +122,7 @@ Jeeves is an AI-powered autonomous HVAC monitoring system that:
     │                                                           │
     │      1. Connect to MQTT broker                            │
     │      2. Parse MQTT message (all 49 FCUs)                 │
-    │      3. Extract FCU-201 data                              │
+    │      3. Extract FCU-01_04 data                              │
     │      4. Normalize field names (LonWorks → streams)       │
     │      5. Save numeric values to database                   │
     │      6. Disconnect after 50s timeout                      │
@@ -159,7 +159,7 @@ Jeeves is an AI-powered autonomous HVAC monitoring system that:
     │        lib/jeeves/discovery-engine.ts                     │
     │                                                           │
     │   1. Load persona contexts from database                 │
-    │   2. List available streams (fcu-201-*)                  │
+    │   2. List available streams (fcu-01_04-*)                  │
     │   3. Build LLM context with monitored streams            │
     │   4. Call Claude with 19 analysis tools                  │
     │   5. Parse AI response (discoveries array)               │
@@ -195,14 +195,14 @@ Jeeves is an AI-powered autonomous HVAC monitoring system that:
 
 **Ingestion Flow:**
 
-1. FCU-201 generates data (LonWorks protocol)
+1. FCU-01_04 generates data (LonWorks protocol)
 2. Gateway publishes to MQTT broker (HiveMQ Cloud)
 3. Inngest worker subscribes and receives message
-4. Parser extracts FCU-201 fields:
+4. Parser extracts FCU-01_04 fields:
 
-   * ``nvoSpaceTemp`` → ``fcu-201-spacetemp``
-   * ``nvoHeatOutput`` → ``fcu-201-heatoutput``
-   * ``nvoCoolOutput`` → ``fcu-201-cooloutput``
+   * ``nvoSpaceTemp`` → ``fcu-01_04-spacetemp``
+   * ``nvoHeatOutput`` → ``fcu-01_04-heatoutput``
+   * ``nvoCoolOutput`` → ``fcu-01_04-cooloutput``
    * ... (20-30 fields total)
 
 5. Numeric values saved to ``TelemetryTick`` table
@@ -395,7 +395,7 @@ Jeeves is an AI-powered autonomous HVAC monitoring system that:
 
     Table: TelemetryTick
     ├── id: UUID (PK)
-    ├── sensorId: TEXT (e.g., "fcu-201-spacetemp")
+    ├── sensorId: TEXT (e.g., "fcu-01_04-spacetemp")
     ├── personaName: TEXT (nullable)
     ├── ts: TIMESTAMP (data generation time)
     └── value: DOUBLE PRECISION
@@ -405,10 +405,10 @@ Jeeves is an AI-powered autonomous HVAC monitoring system that:
 .. code-block:: sql
 
     INSERT INTO "TelemetryTick" (sensorId, ts, value) VALUES
-      ('fcu-201-spacetemp', '2025-10-13 16:27:24', 23.2),
-      ('fcu-201-heatoutput', '2025-10-13 16:27:24', 45.0),
-      ('fcu-201-cooloutput', '2025-10-13 16:27:24', 0.0),
-      ('fcu-201-fanspeed', '2025-10-13 16:27:24', 3.0);
+      ('fcu-01_04-spacetemp', '2025-10-13 16:27:24', 23.2),
+      ('fcu-01_04-heatoutput', '2025-10-13 16:27:24', 45.0),
+      ('fcu-01_04-cooloutput', '2025-10-13 16:27:24', 0.0),
+      ('fcu-01_04-fanspeed', '2025-10-13 16:27:24', 3.0);
 
 **TelemetryAnomaly** (Detected anomalies)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -454,14 +454,14 @@ Jeeves is an AI-powered autonomous HVAC monitoring system that:
       "enabled": true,
       "analysisInterval": "1hour",
       "monitoredStreams": [
-        "fcu-201-spacetemp",
-        "fcu-201-heatprimary",
-        "fcu-201-coolprimary",
-        "fcu-201-fanspeed",
-        "fcu-201-occup",
-        "fcu-201-parsed-heatoutput",
-        "fcu-201-parsed-cooloutput",
-        "fcu-201-parsed-status"
+        "fcu-01_04-spacetemp",
+        "fcu-01_04-heatprimary",
+        "fcu-01_04-coolprimary",
+        "fcu-01_04-fanspeed",
+        "fcu-01_04-occup",
+        "fcu-01_04-parsed-heatoutput",
+        "fcu-01_04-parsed-cooloutput",
+        "fcu-01_04-parsed-status"
       ]
     }
 
@@ -749,7 +749,7 @@ Wrapped in ``jeevesRateLimit.executeWithRetry()`` which:
       topic: 'dt/csg/nbc/hvac/fcu/fcunbs01001/measuredvalue'
     };
 
-**Target FCU:** ``fCU_201`` (focus on deep analysis of one unit)
+**Target FCU:** ``fCU-01_04`` (focus on deep analysis of one unit)
 
 **Process:**
 
@@ -781,7 +781,7 @@ Wrapped in ``jeevesRateLimit.executeWithRetry()`` which:
        const rawData = JSON.parse(payload.toString());
        const parsed = parseMQTTMessage(rawData);
 
-4. **Extract FCU-201 Data**
+4. **Extract FCU-01_04 Data**
 
    .. code-block:: typescript
 
@@ -799,7 +799,7 @@ Wrapped in ``jeevesRateLimit.executeWithRetry()`` which:
        }
 
        // Example: "nvoSpaceTemp" → "spacetemp"
-       // Stream ID: "fcu-201-spacetemp"
+       // Stream ID: "fcu-01_04-spacetemp"
 
 6. **Filter Numeric Values**
 
@@ -824,7 +824,7 @@ Wrapped in ``jeevesRateLimit.executeWithRetry()`` which:
          const numericValue = extractNumericValue(fieldValue);
 
          if (numericValue !== null) {
-           const streamId = `fcu-201-${normalizeFieldName(fieldName)}`;
+           const streamId = `fcu-01_04-${normalizeFieldName(fieldName)}`;
 
            await insertTick({
              sensorId: streamId,
@@ -874,7 +874,7 @@ Wrapped in ``jeevesRateLimit.executeWithRetry()`` which:
 
 **Result:**
 
-* Creates 20-30 streams: ``fcu-201-spacetemp``, ``fcu-201-heatoutput``, etc.
+* Creates 20-30 streams: ``fcu-01_04-spacetemp``, ``fcu-01_04-heatoutput``, etc.
 * Data available for Jeeves analysis
 * Historical data accumulates until 48h cleanup
 
@@ -1294,7 +1294,7 @@ Trigger immediate analysis (manual "Analyze Now" button).
       "id": "uuid",
       "enabled": true,
       "analysisInterval": "1hour",
-      "monitoredStreams": ["fcu-201-spacetemp", "..."],
+      "monitoredStreams": ["fcu-01_04-spacetemp", "..."],
       "lastAnalysisAt": "2025-10-13T17:00:00Z",
       "nextAnalysisAt": "2025-10-13T18:00:00Z",
       "totalDiscoveries": "42",
@@ -1313,9 +1313,9 @@ Trigger immediate analysis (manual "Analyze Now" button).
       "enabled": true,
       "analysisInterval": "1hour",
       "monitoredStreams": [
-        "fcu-201-spacetemp",
-        "fcu-201-heatprimary",
-        "fcu-201-coolprimary"
+        "fcu-01_04-spacetemp",
+        "fcu-01_04-heatprimary",
+        "fcu-01_04-coolprimary"
       ]
     }
 
@@ -1530,7 +1530,7 @@ Trigger immediate analysis (manual "Analyze Now" button).
 
 **Query Parameters:**
 
-* ``streamId``: sensor ID (e.g., "fcu-201-spacetemp")
+* ``streamId``: sensor ID (e.g., "fcu-01_04-spacetemp")
 * ``intervalMs`` (default: 5000): polling interval
 * ``maxMs`` (default: 25000): max duration
 
@@ -1538,9 +1538,9 @@ Trigger immediate analysis (manual "Analyze Now" button).
 
 .. code-block:: text
 
-    data: {"type":"tick","data":{"sensorId":"fcu-201-spacetemp","ts":"2025-10-13T18:45:00Z","value":23.2}}
+    data: {"type":"tick","data":{"sensorId":"fcu-01_04-spacetemp","ts":"2025-10-13T18:45:00Z","value":23.2}}
 
-    data: {"type":"tick","data":{"sensorId":"fcu-201-spacetemp","ts":"2025-10-13T18:50:00Z","value":23.4}}
+    data: {"type":"tick","data":{"sensorId":"fcu-01_04-spacetemp","ts":"2025-10-13T18:50:00Z","value":23.4}}
 
 ================================================================
 6. Frontend Components
@@ -1953,17 +1953,17 @@ The state is automatically initialized on first access via ``ensureJeevesState()
       enabled: false,
       analysisInterval: "1hour",
       monitoredStreams: [
-        "fcu-201-spacetemp",
-        "fcu-201-supplytemp",
-        "fcu-201-effectsetpt",
-        "fcu-201-heatprimary",
-        "fcu-201-coolprimary",
-        "fcu-201-fanspeed",
-        "fcu-201-occup",
-        "fcu-201-parsed-spacetemp",
-        "fcu-201-parsed-heatoutput",
-        "fcu-201-parsed-cooloutput",
-        "fcu-201-parsed-status"
+        "fcu-01_04-spacetemp",
+        "fcu-01_04-supplytemp",
+        "fcu-01_04-effectsetpt",
+        "fcu-01_04-heatprimary",
+        "fcu-01_04-coolprimary",
+        "fcu-01_04-fanspeed",
+        "fcu-01_04-occup",
+        "fcu-01_04-parsed-spacetemp",
+        "fcu-01_04-parsed-heatoutput",
+        "fcu-01_04-parsed-cooloutput",
+        "fcu-01_04-parsed-status"
       ]
     }
 
@@ -1973,7 +1973,7 @@ The state is automatically initialized on first access via ``ensureJeevesState()
 
     SELECT DISTINCT "sensorId", COUNT(*) as data_points
     FROM "TelemetryTick"
-    WHERE "sensorId" LIKE 'fcu-201-%'
+    WHERE "sensorId" LIKE 'fcu-01_04-%'
       AND "ts" > NOW() - INTERVAL '1 hour'
     GROUP BY "sensorId"
     ORDER BY "sensorId";
@@ -1982,12 +1982,12 @@ Expected output:
 
 .. code-block:: text
 
-    fcu-201-coolprimary       | 12
-    fcu-201-effectsetpt       | 12
-    fcu-201-fanspeed          | 12
-    fcu-201-heatprimary       | 12
-    fcu-201-parsed-spacetemp  | 12
-    fcu-201-spacetemp         | 12
+    fcu-01_04-coolprimary       | 12
+    fcu-01_04-effectsetpt       | 12
+    fcu-01_04-fanspeed          | 12
+    fcu-01_04-heatprimary       | 12
+    fcu-01_04-parsed-spacetemp  | 12
+    fcu-01_04-spacetemp         | 12
     ... (20-30 total streams)
 
 7.3 Inngest Setup
@@ -2083,7 +2083,7 @@ Should see:
 
     📩 Message #1 received at 19:47:23
        📅 Data timestamp: 2025-10-13T16:27:24.075Z
-       🌡️  FCU-201 VALUES:
+       🌡️  FCU-01_04 VALUES:
           Space Temp:     23.2 °C {ok}
           Setpoint:       22.0 °C {ok}
 
@@ -2537,7 +2537,7 @@ Migrations run automatically on build:
 
 **Symptoms:**
 
-* ``SELECT * FROM "TelemetryTick" WHERE "sensorId" LIKE 'fcu-201-%'`` returns 0 rows
+* ``SELECT * FROM "TelemetryTick" WHERE "sensorId" LIKE 'fcu-01_04-%'`` returns 0 rows
 * MQTT monitor shows data locally but database empty
 
 **Solutions:**
@@ -2550,7 +2550,7 @@ Migrations run automatically on build:
 
 2. Check Inngest dashboard for errors
 3. Verify MQTT credentials are correct
-4. Check if FCU-201 exists in MQTT messages:
+4. Check if FCU-01_04 exists in MQTT messages:
 
    .. code-block:: bash
 
@@ -2795,13 +2795,13 @@ Enable Drizzle logging:
 
     // Instead of loading all data then filtering in JS:
     const allData = await db.select().from(TelemetryTick);
-    const filtered = allData.filter(d => d.sensorId === 'fcu-201-spacetemp');
+    const filtered = allData.filter(d => d.sensorId === 'fcu-01_04-spacetemp');
 
     // Use database filtering:
     const filtered = await db
       .select()
       .from(TelemetryTick)
-      .where(eq(TelemetryTick.sensorId, 'fcu-201-spacetemp'));
+      .where(eq(TelemetryTick.sensorId, 'fcu-01_04-spacetemp'));
 
 **Data Retention:**
 
@@ -2947,8 +2947,8 @@ Enable Drizzle logging:
 
 **Stream Naming:**
 
-* ``fcu-201-spacetemp`` - Raw LonWorks field
-* ``fcu-201-parsed-spacetemp`` - Derived metric
+* ``fcu-01_04-spacetemp`` - Raw LonWorks field
+* ``fcu-01_04-parsed-spacetemp`` - Derived metric
 
 13.2 File Locations Quick Reference
 ----------------------------------------------------------------
@@ -3002,7 +3002,7 @@ Enable Drizzle logging:
            MAX(ts) as last_data_point,
            EXTRACT(EPOCH FROM (NOW() - MAX(ts)))/60 as minutes_ago
     FROM "TelemetryTick"
-    WHERE "sensorId" LIKE 'fcu-201-%'
+    WHERE "sensorId" LIKE 'fcu-01_04-%'
     GROUP BY "sensorId"
     ORDER BY minutes_ago;
 

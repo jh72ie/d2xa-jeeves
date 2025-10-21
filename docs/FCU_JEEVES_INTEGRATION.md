@@ -4,7 +4,7 @@
 
 This integration connects real MQTT FCU (Fan Coil Unit) data to Jeeves AI for automatic discovery and analysis.
 
-**Strategy**: Start with **ONE FCU (FCU-201)** and save **ALL its fields** as separate streams for deep analysis before scaling to all 49 units.
+**Strategy**: Start with **ONE FCU (FCU-01_04)** and save **ALL its fields** as separate streams for deep analysis before scaling to all 49 units.
 
 ---
 
@@ -24,7 +24,7 @@ This integration connects real MQTT FCU (Fan Coil Unit) data to Jeeves AI for au
 │                                                               │
 │   1. Connect to MQTT                                          │
 │   2. Get message with all 49 FCUs                            │
-│   3. Extract FCU-201 data                                     │
+│   3. Extract FCU-01_04 data                                     │
 │   4. Save each field as separate stream                      │
 │   5. Disconnect after 50s                                     │
 └────────────────────────┬────────────────────────────────────┘
@@ -35,10 +35,10 @@ This integration connects real MQTT FCU (Fan Coil Unit) data to Jeeves AI for au
 │   Columns: id, sensorId, personaName, ts, value              │
 │                                                               │
 │   Example rows:                                               │
-│   - fcu-201-spacetemp: 23.2                                   │
-│   - fcu-201-heatprimary: 45.0                                 │
-│   - fcu-201-fanspeed: 3.0                                     │
-│   - fcu-201-occup: 1.0                                        │
+│   - fcu-01_04-spacetemp: 23.2                                   │
+│   - fcu-01_04-heatprimary: 45.0                                 │
+│   - fcu-01_04-fanspeed: 3.0                                     │
+│   - fcu-01_04-occup: 1.0                                        │
 │   ... (20-30 fields total)                                    │
 └────────────────────────┬────────────────────────────────────┘
                          │
@@ -48,7 +48,7 @@ This integration connects real MQTT FCU (Fan Coil Unit) data to Jeeves AI for au
 │   lib/jeeves/discovery-engine.ts                              │
 │   Runs: Every 5 minutes (configurable)                        │
 │                                                               │
-│   1. listAvailableStreams (finds all fcu-201-* streams)       │
+│   1. listAvailableStreams (finds all fcu-01_04-* streams)       │
 │   2. Load recent data for each stream                         │
 │   3. Run 19 analysis tools (correlations, anomalies, etc.)    │
 │   4. Generate creative discoveries                            │
@@ -64,8 +64,8 @@ This integration connects real MQTT FCU (Fan Coil Unit) data to Jeeves AI for au
 
 **1. `lib/inngest/functions/fcu-data-ingestion.ts`**
 - Connects to MQTT broker every 5 minutes
-- Extracts FCU-201 data
-- Normalizes field names: `nvoSpaceTemp` → `fcu-201-spacetemp`
+- Extracts FCU-01_04 data
+- Normalizes field names: `nvoSpaceTemp` → `fcu-01_04-spacetemp`
 - Filters numeric values only
 - Saves ~20-30 streams per execution
 - Auto-disconnects after 50s to avoid timeouts
@@ -77,7 +77,7 @@ This integration connects real MQTT FCU (Fan Coil Unit) data to Jeeves AI for au
 **3. Updated `lib/monitoring/stream-tools.ts`**
 - `listAvailableStreams()` now dynamically discovers streams from database
 - Queries for distinct `sensorId` values with activity in last 24 hours
-- Will automatically find all `fcu-201-*` streams once data starts flowing
+- Will automatically find all `fcu-01_04-*` streams once data starts flowing
 
 ---
 
@@ -98,7 +98,7 @@ The worker runs automatically on Vercel - no local Inngest dev server needed!
 1. Deploy to Vercel
 2. Visit Vercel logs
 3. Look for: `[FCU Ingestion] Connected to MQTT broker`
-4. Should see: `[FCU Ingestion] ✓ Saved X streams for fCU_201`
+4. Should see: `[FCU Ingestion] ✓ Saved X streams for fCU_01_04`
 
 ### Step 3: Wait for Data Collection
 
@@ -107,22 +107,22 @@ The ingestion worker runs every 5 minutes. After 2-3 cycles (~10-15 minutes), yo
 **Verify data is flowing:**
 
 ```sql
--- Check if FCU-201 streams exist
+-- Check if FCU-01_04 streams exist
 SELECT DISTINCT "sensorId", COUNT(*) as data_points
 FROM "TelemetryTick"
-WHERE "sensorId" LIKE 'fcu-201-%'
+WHERE "sensorId" LIKE 'fcu-01_04-%'
 GROUP BY "sensorId"
 ORDER BY "sensorId";
 ```
 
 You should see results like:
 ```
-fcu-201-coolprimary       | 10
-fcu-201-effectsetpt       | 10
-fcu-201-fanspeed          | 10
-fcu-201-heatprimary       | 10
-fcu-201-parsed-spacetemp  | 10
-fcu-201-spacetemp         | 10
+fcu-01_04-coolprimary       | 10
+fcu-01_04-effectsetpt       | 10
+fcu-01_04-fanspeed          | 10
+fcu-01_04-heatprimary       | 10
+fcu-01_04-parsed-spacetemp  | 10
+fcu-01_04-spacetemp         | 10
 ... (20-30 total streams)
 ```
 
@@ -133,16 +133,16 @@ fcu-201-spacetemp         | 10
 ```sql
 UPDATE "JeevesState"
 SET "monitoredStreams" = to_jsonb(ARRAY[
-  'fcu-201-spacetemp',
-  'fcu-201-effectsetpt',
-  'fcu-201-heatprimary',
-  'fcu-201-coolprimary',
-  'fcu-201-fanspeed',
-  'fcu-201-occup',
-  'fcu-201-parsed-spacetemp',
-  'fcu-201-parsed-heatoutput',
-  'fcu-201-parsed-cooloutput',
-  'fcu-201-parsed-status'
+  'fcu-01_04-spacetemp',
+  'fcu-01_04-effectsetpt',
+  'fcu-01_04-heatprimary',
+  'fcu-01_04-coolprimary',
+  'fcu-01_04-fanspeed',
+  'fcu-01_04-occup',
+  'fcu-01_04-parsed-spacetemp',
+  'fcu-01_04-parsed-heatoutput',
+  'fcu-01_04-parsed-cooloutput',
+  'fcu-01_04-parsed-status'
 ]);
 ```
 
@@ -153,30 +153,30 @@ curl -X PATCH https://your-app.vercel.app/api/jeeves/state \
   -H "Content-Type: application/json" \
   -d '{
     "monitoredStreams": [
-      "fcu-201-spacetemp",
-      "fcu-201-effectsetpt",
-      "fcu-201-heatprimary",
-      "fcu-201-coolprimary",
-      "fcu-201-fanspeed",
-      "fcu-201-occup",
-      "fcu-201-parsed-spacetemp",
-      "fcu-201-parsed-heatoutput",
-      "fcu-201-parsed-cooloutput",
-      "fcu-201-parsed-status"
+      "fcu-01_04-spacetemp",
+      "fcu-01_04-effectsetpt",
+      "fcu-01_04-heatprimary",
+      "fcu-01_04-coolprimary",
+      "fcu-01_04-fanspeed",
+      "fcu-01_04-occup",
+      "fcu-01_04-parsed-spacetemp",
+      "fcu-01_04-parsed-heatoutput",
+      "fcu-01_04-parsed-cooloutput",
+      "fcu-01_04-parsed-status"
     ]
   }'
 ```
 
-**Option C: Dynamic Discovery (Let Jeeves find all FCU-201 streams)**
+**Option C: Dynamic Discovery (Let Jeeves find all FCU-01_04 streams)**
 
 ```sql
--- Configure Jeeves to monitor ALL fcu-201 streams dynamically
+-- Configure Jeeves to monitor ALL fcu-01_04 streams dynamically
 UPDATE "JeevesState"
 SET "monitoredStreams" = COALESCE(
   (
     SELECT to_jsonb(array_agg(DISTINCT "sensorId"))
     FROM "TelemetryTick"
-    WHERE "sensorId" LIKE 'fcu-201-%'
+    WHERE "sensorId" LIKE 'fcu-01_04-%'
       AND "ts" > NOW() - INTERVAL '1 hour'
   ),
   '[]'::jsonb
@@ -195,7 +195,7 @@ SET "monitoredStreams" = COALESCE(
 
 ## What Jeeves Will Discover
 
-With complete FCU-201 data, Jeeves can find patterns like:
+With complete FCU-01_04 data, Jeeves can find patterns like:
 
 ### 1. **Internal FCU Dynamics**
 > "Fan speed shows perfect 0.94 correlation with heat output - efficient control loop validated"
@@ -229,20 +229,20 @@ With complete FCU-201 data, Jeeves can find patterns like:
 Format: `fcu-{id}-{normalized-field-name}`
 
 Examples:
-- `nvoSpaceTemp` → `fcu-201-spacetemp`
-- `nvoHeatPrimary` → `fcu-201-heatprimary`
-- `nvoCoolPrimary` → `fcu-201-coolprimary`
-- `nvoFanSpeed` → `fcu-201-fanspeed`
-- `nvoOccup` → `fcu-201-occup`
+- `nvoSpaceTemp` → `fcu-01_04-spacetemp`
+- `nvoHeatPrimary` → `fcu-01_04-heatprimary`
+- `nvoCoolPrimary` → `fcu-01_04-coolprimary`
+- `nvoFanSpeed` → `fcu-01_04-fanspeed`
+- `nvoOccup` → `fcu-01_04-occup`
 
 ### Parsed/Derived Metrics
 Format: `fcu-{id}-parsed-{metric-name}`
 
 Examples:
-- `fcu-201-parsed-spacetemp` - Extracted from status string
-- `fcu-201-parsed-heatoutput` - Heating % extracted
-- `fcu-201-parsed-cooloutput` - Cooling % extracted
-- `fcu-201-parsed-status` - Health: 0=ok, 1=fault, 2=down
+- `fcu-01_04-parsed-spacetemp` - Extracted from status string
+- `fcu-01_04-parsed-heatoutput` - Heating % extracted
+- `fcu-01_04-parsed-cooloutput` - Cooling % extracted
+- `fcu-01_04-parsed-status` - Health: 0=ok, 1=fault, 2=down
 
 ---
 
@@ -258,7 +258,7 @@ Examples:
 [FCU Ingestion] Received 49 FCUs, 3 faults
 [FCU Ingestion] Processing fCU_201 with 25 fields
 [FCU Ingestion] ✓ Saved 28 streams for fCU_201
-[FCU Ingestion] Stream IDs: fcu-201-spacetemp, fcu-201-heatprimary, ...
+[FCU Ingestion] Stream IDs: fcu-01_04-spacetemp, fcu-01_04-heatprimary, ...
 ```
 
 ### Check Stream Discovery
@@ -267,7 +267,7 @@ Examples:
 ```sql
 SELECT "sensorId", COUNT(*) as points
 FROM "TelemetryTick"
-WHERE "sensorId" LIKE 'fcu-201-%'
+WHERE "sensorId" LIKE 'fcu-01_04-%'
   AND "ts" > NOW() - INTERVAL '1 hour'
 GROUP BY "sensorId"
 ORDER BY points DESC;
@@ -298,7 +298,7 @@ ORDER BY points DESC;
 
 ### No Data in Database
 
-**Problem:** `SELECT * FROM "TelemetryTick" WHERE "sensorId" LIKE 'fcu-201-%'` returns 0 rows
+**Problem:** `SELECT * FROM "TelemetryTick" WHERE "sensorId" LIKE 'fcu-01_04-%'` returns 0 rows
 
 **Solutions:**
 1. Check Inngest worker is registered:
@@ -309,11 +309,11 @@ ORDER BY points DESC;
 
 2. Check Inngest logs for errors
 3. Verify MQTT credentials are correct (should connect successfully)
-4. Check if FCU-201 exists in MQTT messages (maybe it's a different ID?)
+4. Check if FCU-01_04 exists in MQTT messages (maybe it's a different ID?)
 
 ### Jeeves Not Finding Streams
 
-**Problem:** Jeeves says "No data found for stream fcu-201-spacetemp"
+**Problem:** Jeeves says "No data found for stream fcu-01_04-spacetemp"
 
 **Solutions:**
 1. Verify streams exist in database (see query above)
@@ -340,13 +340,13 @@ ORDER BY points DESC;
 
 ## Scaling to More FCUs
 
-Once FCU-201 analysis is working, you can easily scale:
+Once FCU-01_04 analysis is working, you can easily scale:
 
 ### Option 1: Add Specific FCUs
 
 ```typescript
 // In fcu-data-ingestion.ts
-const TARGET_FCUS = ['fCU_201', 'fCU_206', 'fCU_218']; // Add faulty units
+const TARGET_FCUS = ['fCU_01_04', 'fCU_01_05', 'fCU_01_07']; // Add faulty units
 
 for (const targetFCU of TARGET_FCUS) {
   const fcu = parsed.fcus.find(f => f.id === targetFCU);
@@ -354,7 +354,7 @@ for (const targetFCU of TARGET_FCUS) {
 }
 ```
 
-### Option 2: Save All 49 FCUs
+### Option 2: Save All FCUs
 
 ```typescript
 // Save ALL FCUs, ALL fields (~1,200 streams)
@@ -410,23 +410,23 @@ await insertTick({
 ## Success Criteria
 
 You'll know it's working when:
-- ✅ Ingestion worker logs show "✓ Saved X streams for fCU_201"
-- ✅ Database has 20-30 `fcu-201-*` streams with growing data
+- ✅ Ingestion worker logs show "✓ Saved X streams for fCU_01_04"
+- ✅ Database has 20-30 `fcu-01_04-*` streams with growing data
 - ✅ Jeeves finds streams: `[Stream Discovery] Found 28 active streams`
-- ✅ Jeeves generates discoveries about FCU-201 internal dynamics
+- ✅ Jeeves generates discoveries about FCU-01_04 internal dynamics
 - ✅ Personas receive notifications about interesting patterns
 
 ---
 
 ## FAQ
 
-**Q: Why only FCU-201?**
+**Q: Why only FCU-01_04?**
 A: Deep analysis of ONE unit validates the approach before scaling. Cheaper, faster, easier to debug.
 
 **Q: Can Jeeves handle all 49 FCUs?**
 A: Yes, but start small. 49 FCUs × 30 fields = 1,470 streams. Analysis will be slower and costlier.
 
-**Q: What if FCU-201 is boring?**
+**Q: What if FCU-01_04 is boring?**
 A: Pick a different FCU! Change `TARGET_FCU = 'fCU_206'` (a faulty unit is more interesting).
 
 **Q: How do I see raw MQTT messages?**

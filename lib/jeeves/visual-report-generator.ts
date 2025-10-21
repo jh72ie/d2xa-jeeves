@@ -113,7 +113,7 @@ Use modern CSS with gradients, shadows, and clean typography.
 
     // Step 3: Generate live dashboard script
     console.log("[Visual Report] Step 2: Generating dashboard script...");
-    const allStreams = discovery.evidence?.streams || ['fcu-201-spacetemp'];
+    const allStreams = discovery.evidence?.streams || ['fcu-01_04-spacetemp'];
     // Limit to 2 streams for MQTT connection limits
     const streams = allStreams.slice(0, 2);
     console.log("[Visual Report] Streams for dashboard:", streams, allStreams.length > 2 ? `(limited from ${allStreams.length})` : '');

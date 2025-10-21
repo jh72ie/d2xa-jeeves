@@ -170,7 +170,7 @@ VALUES
   (gen_random_uuid(), 'Jukka', 'preference', 'Wants to see raw data correlations and statistical confidence levels', '{"data-detail": "high", "stats": "required"}'::jsonb, NOW() - INTERVAL '75 days'),
   (gen_random_uuid(), 'Jukka', 'interaction', 'Downloaded CSV export from FCU performance dashboard', '{"action": "export", "format": "csv"}'::jsonb, NOW() - INTERVAL '60 days'),
   (gen_random_uuid(), 'Jukka', 'preference', 'Loves interactive visualizations and prefers dashboards over text reports', '{"format": "dashboard", "interactive": true}'::jsonb, NOW() - INTERVAL '40 days'),
-  (gen_random_uuid(), 'Jukka', 'interaction', 'Set up custom alerting thresholds for FCU-201 temperature', '{"fcu": "201", "param": "temp", "threshold": 22.5}'::jsonb, NOW() - INTERVAL '25 days'),
+  (gen_random_uuid(), 'Jukka', 'interaction', 'Set up custom alerting thresholds for FCU-01_04 temperature', '{"fcu": "201", "param": "temp", "threshold": 22.5}'::jsonb, NOW() - INTERVAL '25 days'),
   (gen_random_uuid(), 'Jukka', 'fact', 'Responds to Jeeves alerts within 30 minutes on average', '{"response-time": "30m", "reliability": "high"}'::jsonb, NOW() - INTERVAL '15 days'),
   (gen_random_uuid(), 'Jukka', 'note', 'Praised Jeeves dashboard for helping identify valve control issue before complete failure', '{"sentiment": "positive", "value": "predictive"}'::jsonb, NOW() - INTERVAL '7 days');
 
@@ -190,9 +190,9 @@ INSERT INTO "UserLog" (id, "personaName", kind, content, meta, "createdAt")
 VALUES
   (gen_random_uuid(), 'Mikko', 'preference', 'Prefers work orders in ticketing system over email notifications', '{"channel": "work-order-system"}'::jsonb, NOW() - INTERVAL '40 days'),
   (gen_random_uuid(), 'Mikko', 'fact', 'Part of 3-person maintenance team covering building systems', '{"team-size": 3, "coverage": "full-building"}'::jsonb, NOW() - INTERVAL '35 days'),
-  (gen_random_uuid(), 'Mikko', 'interaction', 'Fixed FCU-201 temperature sensor calibration issue', '{"action": "repair", "fcu": "201", "issue": "sensor-calibration"}'::jsonb, NOW() - INTERVAL '25 days'),
+  (gen_random_uuid(), 'Mikko', 'interaction', 'Fixed FCU-01_04 temperature sensor calibration issue', '{"action": "repair", "fcu": "201", "issue": "sensor-calibration"}'::jsonb, NOW() - INTERVAL '25 days'),
   (gen_random_uuid(), 'Mikko', 'preference', 'When checking notifications, wants brief technical descriptions with equipment IDs', '{"format": "brief-technical", "include": "equipment-id"}'::jsonb, NOW() - INTERVAL '15 days'),
-  (gen_random_uuid(), 'Mikko', 'interaction', 'Replaced cooling valve actuator on FCU-201', '{"action": "replacement", "component": "valve-actuator", "fcu": "201"}'::jsonb, NOW() - INTERVAL '8 days');
+  (gen_random_uuid(), 'Mikko', 'interaction', 'Replaced cooling valve actuator on FCU-01_04', '{"action": "replacement", "component": "valve-actuator", "fcu": "201"}'::jsonb, NOW() - INTERVAL '8 days');
 
 -- ============================================
 -- STEP 4: Initialize JeevesState

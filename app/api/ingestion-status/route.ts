@@ -18,7 +18,7 @@ export async function GET() {
     // Check Jeeves state
     const jeevesState = await getJeevesState();
 
-    // Check for recent FCU-201 data (last 30 minutes)
+    // Check for recent FCU-01_04 data (last 30 minutes)
     const recentData = await db
       .select({
         sensorId: TelemetryTick.sensorId,
@@ -26,21 +26,21 @@ export async function GET() {
         value: TelemetryTick.value,
       })
       .from(TelemetryTick)
-      .where(sql`${TelemetryTick.sensorId} LIKE 'fcu-201-%' AND ${TelemetryTick.ts} > NOW() - INTERVAL '30 minutes'`)
+      .where(sql`${TelemetryTick.sensorId} LIKE 'fcu-01_04-%' AND ${TelemetryTick.ts} > NOW() - INTERVAL '30 minutes'`)
       .orderBy(desc(TelemetryTick.ts))
       .limit(5);
 
-    // Count total FCU-201 records
+    // Count total FCU-01_04 records
     const totalCount = await db
       .select({ count: sql<string>`count(*)` })
       .from(TelemetryTick)
-      .where(sql`${TelemetryTick.sensorId} LIKE 'fcu-201-%'`);
+      .where(sql`${TelemetryTick.sensorId} LIKE 'fcu-01_04-%'`);
 
     // Get distinct streams
     const streams = await db
       .selectDistinct({ sensorId: TelemetryTick.sensorId })
       .from(TelemetryTick)
-      .where(sql`${TelemetryTick.sensorId} LIKE 'fcu-201-%'`);
+      .where(sql`${TelemetryTick.sensorId} LIKE 'fcu-01_04-%'`);
 
     const status = {
       ingestionEnabled: jeevesState?.ingestionEnabled ?? false,

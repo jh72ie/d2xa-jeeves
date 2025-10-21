@@ -94,9 +94,9 @@ EXAMPLES OF CREATIVE DISCOVERIES:
 YOUR APPROACH:
 1. Start by listing available streams using listAvailableStreamsTool
 2. **CRITICAL**: Use EXACT stream names from the list - NEVER guess or invent stream names!
-   - Example: Use 'fcu-201-heatoutput' NOT 'fcu-201-heatingoutput'
-   - Example: Use 'fcu-201-cooloutput' NOT 'fcu-201-coolingoutput'
-   - Example: Use 'fcu-201-fanspeedstate' NOT 'fcu-201-fanspeed'
+   - Example: Use 'fcu-01_04-heatoutput' NOT 'fcu-01_04-heatingoutput'
+   - Example: Use 'fcu-01_04-cooloutput' NOT 'fcu-01_04-coolingoutput'
+   - Example: Use 'fcu-01_04-fanspeedstate' NOT 'fcu-01_04-fanspeed'
 3. Load recent data for monitored streams using exact names
 4. Analyze using ANY combination of your tools - be creative!
 5. Look for ANYTHING unusual, interesting, or creative

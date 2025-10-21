@@ -2,12 +2,12 @@
  * MQTT Live Monitor - Real-time Charts Viewer
  *
  * Shows live MQTT data from HiveMQ broker with time-series charts
- * - FCU-201 individual field charts (from database)
+ * - FCU-01_04 individual field charts (from database)
  * - Live aggregate charts (from MQTT stream)
  */
 
 import { MQTTLiveCharts } from "@/components/mqtt/mqtt-live-charts";
-import { FCU201Charts } from "@/components/mqtt/fcu-201-charts";
+import { FCU201Charts } from "@/components/mqtt/fcu-01_04-charts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function MQTTMonitorPage() {
@@ -24,13 +24,13 @@ export default function MQTTMonitorPage() {
       </header>
 
       {/* Tabbed View */}
-      <Tabs defaultValue="fcu-201" className="w-full">
+      <Tabs defaultValue="fcu-01_04" className="w-full">
         <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="fcu-201">FCU-201 Fields (Database)</TabsTrigger>
+          <TabsTrigger value="fcu-01_04">FCU-01_04 Fields (Database)</TabsTrigger>
           <TabsTrigger value="aggregate">All FCUs (Live Stream)</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="fcu-201" className="mt-6">
+        <TabsContent value="fcu-01_04" className="mt-6">
           <FCU201Charts />
         </TabsContent>
 

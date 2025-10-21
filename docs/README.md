@@ -25,7 +25,7 @@ Comprehensive developer manual covering the entire system architecture, codebase
 ## 🔧 Integration Guides
 
 ### [FCU_JEEVES_INTEGRATION.md](FCU_JEEVES_INTEGRATION.md)
-MQTT integration guide for connecting FCU-201 to Jeeves AI analysis.
+MQTT integration guide for connecting FCU-01_04 to Jeeves AI analysis.
 
 **Topics:**
 - MQTT broker setup (HiveMQ Cloud)

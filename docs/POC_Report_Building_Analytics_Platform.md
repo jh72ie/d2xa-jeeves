@@ -129,7 +129,7 @@ The platform consists of five main layers working together:
 
 1. FCU hardware publishes sensor readings to MQTT broker
 2. Background worker connects and retrieves data from all 49 units
-3. System extracts and normalizes FCU-201 data (focus unit for deep analysis)
+3. System extracts and normalizes FCU-01_04 data (focus unit for deep analysis)
 4. Data stored in database as individual telemetry streams
 5. Result: 20-30 data points collected per cycle
 
@@ -194,7 +194,7 @@ The platform consists of five main layers working together:
 - Host: HiveMQ Cloud (EU region)
 - Port: 8883 (MQTT over TLS)
 - Topic: Building HVAC FCU Level 2
-- Target: FCU-201 (expandable to all units)
+- Target: FCU-01_04 (expandable to all units)
 
 ### 4.2 AI Discovery Engine
 
@@ -360,7 +360,7 @@ User interface shows setpoint of 22.5°C, but FCU consistently targets 22.0°C�
 **Persona-Specific Notifications Generated:**
 
 **Building Engineer (Alex Chen) - Technical Focus:**
-> "**Half-Degree Setpoint Offset Detected in FCU-201**
+> "**Half-Degree Setpoint Offset Detected in FCU-01_04**
 >
 > I've discovered a persistent 0.5°C offset between user setpoint (22.5°C) and effective setpoint (22.0°C) over 6 hours with 100% consistency.
 >
@@ -370,7 +370,7 @@ User interface shows setpoint of 22.5°C, but FCU consistently targets 22.0°C�
 > - No active heating/cooling response
 >
 > **Recommended Investigation:**
-> 1. Check FCU-201 control parameters for programmed offset
+> 1. Check FCU-01_04 control parameters for programmed offset
 > 2. Verify deadband configuration (may explain lack of cooling at 23.2°C)
 > 3. Review operating mode (eco/night mode may enforce offset)
 > 4. Examine control logic for calibration requirements
@@ -378,9 +378,9 @@ User interface shows setpoint of 22.5°C, but FCU consistently targets 22.0°C�
 > This appears to be either intentional energy-saving configuration or a control loop issue requiring calibration."
 
 **Facility Manager (Maria Rodriguez) - Impact Focus:**
-> "**Temperature Control Issue in FCU-201 Affecting User Comfort**
+> "**Temperature Control Issue in FCU-01_04 Affecting User Comfort**
 >
-> FCU-201 is not reaching the user's requested temperature setpoint of 22.5°C, instead consistently targeting 22.0°C. The room is currently 23.2°C, above both setpoints.
+> FCU-01_04 is not reaching the user's requested temperature setpoint of 22.5°C, instead consistently targeting 22.0°C. The room is currently 23.2°C, above both setpoints.
 >
 > **Impact Summary:**
 > - User comfort: Room 0.7°C warmer than requested
@@ -461,7 +461,7 @@ User interface shows setpoint of 22.5°C, but FCU consistently targets 22.0°C�
 ### 6.2 Current Limitations
 
 **Single FCU Focus**
-- Current: Only FCU-201 data ingested for deep analysis
+- Current: Only FCU-01_04 data ingested for deep analysis
 - Reason: Validate approach before scaling to all 49 units
 - Future: Expand to 5-10 interesting units (normal + faulty)
 
@@ -615,7 +615,7 @@ User interface shows setpoint of 22.5°C, but FCU consistently targets 22.0°C�
 
 **Data Collection:**
 - Frequency: Every 5 minutes
-- Target units: FCU-201 (expandable)
+- Target units: FCU-01_04 (expandable)
 - Streams per cycle: 20-30
 - Timeout: 50 seconds
 

@@ -31,7 +31,7 @@ The Discovery Chat is powered by **Claude Sonnet 3.5** with **ALL 19 Jeeves anal
 
 #### 1. `getStreamRecentDataTool`
 **What it does**: Loads recent data points with quality assessment
-**Example use**: "Show me the last 100 values for fcu-201-spacetemp"
+**Example use**: "Show me the last 100 values for fcu-01_04-spacetemp"
 
 #### 2. `getStreamTimeWindowTool`
 **What it does**: Gets data for specific time range
@@ -47,7 +47,7 @@ The Discovery Chat is powered by **Claude Sonnet 3.5** with **ALL 19 Jeeves anal
 
 #### 5. `listAvailableStreamsTool`
 **What it does**: Discovers all available streams in system
-**Example use**: "What other FCU-201 streams exist?"
+**Example use**: "What other FCU-01_04 streams exist?"
 
 ---
 
@@ -60,7 +60,7 @@ The Discovery Chat is powered by **Claude Sonnet 3.5** with **ALL 19 Jeeves anal
 - Min, max, percentiles (25th, 50th, 75th)
 - Distribution shape (skewness, kurtosis)
 
-**Example use**: "What are the stats for fcu-201-heatoutput?"
+**Example use**: "What are the stats for fcu-01_04-heatoutput?"
 
 **Sample output**:
 ```json
@@ -175,7 +175,7 @@ The Discovery Chat is powered by **Claude Sonnet 3.5** with **ALL 19 Jeeves anal
 - Highlights significant relationships
 - Finds hidden patterns
 
-**Example use**: "Show correlations between all FCU-201 streams"
+**Example use**: "Show correlations between all FCU-01_04 streams"
 
 #### 14. `testStreamCausalityTool`
 **What it does**: Tests Granger causality
@@ -268,7 +268,7 @@ User: Show me the latest data and tell me what's happening
 
 Jeeves: Let me investigate...
 
-[Uses getStreamRecentDataTool for fcu-201-spacetemp]
+[Uses getStreamRecentDataTool for fcu-01_04-spacetemp]
 [Uses analyzeStreamStatisticsTool]
 [Uses analyzeStreamTrendTool]
 
@@ -300,7 +300,7 @@ User: Is fan speed related to cooling output?
 
 Jeeves: Let me check the correlation...
 
-[Uses correlateTwoStreamsTool for fcu-201-fanspeed and fcu-201-cooloutput]
+[Uses correlateTwoStreamsTool for fcu-01_04-fanspeed and fcu-01_04-cooloutput]
 
 Yes! There's a **very strong relationship**:
 
@@ -314,7 +314,7 @@ Yes! There's a **very strong relationship**:
 - 94% of cooling output variation is explained by fan speed
 - This is **expected behavior** - the control system is working correctly
 
-**Validation**: This matches the FCU-201 control logic where:
+**Validation**: This matches the FCU-01_04 control logic where:
 1. System detects cooling need
 2. Ramps up fan speed
 3. Opens cooling valve (~60 seconds later)
@@ -365,7 +365,7 @@ The 2:23 PM spike was likely triggered by:
 
 ### Example 4: Multi-Stream Comparison
 ```
-User: Compare FCU-201 performance to other units
+User: Compare FCU-01_04 performance to other units
 
 Jeeves: Let me compare across units...
 
@@ -377,13 +377,13 @@ Jeeves: Let me compare across units...
 
 | Unit    | Avg Temp | Stability (σ) | Trend   | Performance |
 |---------|----------|---------------|---------|-------------|
-| FCU-201 | 22.9°C   | 0.3°C        | Stable  | ✅ Normal   |
+| FCU-01_04 | 22.9°C   | 0.3°C        | Stable  | ✅ Normal   |
 | FCU-202 | 22.8°C   | 0.2°C        | Stable  | ✅ Normal   |
 | FCU-206 | 15.2°C   | 8.4°C        | Erratic | ❌ Faulty   |
 | FCU-218 | 23.6°C   | 1.2°C        | Rising  | ⚠️ Watch   |
 
 **Key Findings**:
-1. **FCU-201**: Performing normally ✅
+1. **FCU-01_04**: Performing normally ✅
 2. **FCU-206**: Critical failure - temperature sensor or control board issue
 3. **FCU-218**: Slightly unstable - may need calibration
 4. **System-wide correlation**: 0.78 (units respond to same building conditions)

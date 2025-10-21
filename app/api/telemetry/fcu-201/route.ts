@@ -1,7 +1,7 @@
 /**
- * FCU-201 Telemetry API
+ * FCU-01_04 Telemetry API
  *
- * Returns recent data for all FCU-201 streams from database
+ * Returns recent data for all FCU-01_04 streams from database
  */
 
 import { NextResponse } from 'next/server';
@@ -12,7 +12,7 @@ export const runtime = 'nodejs';
 
 export async function GET() {
   try {
-    // Get list of all FCU-201 streams from database
+    // Get list of all FCU-01_04 streams from database
     const { db } = await import('@/lib/db/queries');
     const { TelemetryTick } = await import('@/lib/db/telemetry-ops');
     const { sql } = await import('drizzle-orm');
@@ -20,13 +20,13 @@ export async function GET() {
     const streamIdsResult = await db
       .selectDistinct({ sensorId: TelemetryTick.sensorId })
       .from(TelemetryTick)
-      .where(sql`${TelemetryTick.sensorId} LIKE 'fcu-201-%' AND ${TelemetryTick.ts} > NOW() - INTERVAL '1 hour'`);
+      .where(sql`${TelemetryTick.sensorId} LIKE 'fcu-01_04-%' AND ${TelemetryTick.ts} > NOW() - INTERVAL '1 hour'`);
 
     const streamIds = streamIdsResult.map(r => r.sensorId);
 
     if (streamIds.length === 0) {
       return NextResponse.json({
-        error: 'No FCU-201 data available',
+        error: 'No FCU-01_04 data available',
         message: 'Waiting for ingestion worker to collect data...',
       }, { status: 404 });
     }
@@ -87,9 +87,9 @@ export async function GET() {
     });
 
   } catch (error: any) {
-    console.error('[FCU-201 API] Error:', error);
+    console.error('[FCU-01_04 API] Error:', error);
     return NextResponse.json({
-      error: 'Failed to fetch FCU-201 data',
+      error: 'Failed to fetch FCU-01_04 data',
       message: error.message,
     }, { status: 500 });
   }

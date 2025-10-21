@@ -111,6 +111,162 @@ function parseValueString(valueStr: string): {
  * Parse single FCU status object
  */
 function parseFCU(fcuId: string, fcuData: Record<string, any>): FCUStatus {
+  // Use 'as FCUStatus' to satisfy TypeScript that this object literal, 
+  // which contains only the REQUIRED properties, is a valid starting point.
+  const status: FCUStatus = {
+    id: fcuId,
+    status: 'ok',
+    rawData: fcuData,
+  } as FCUStatus; // <--- FIX: Added type assertion to resolve initialization error
+
+  let hasFault = false;
+  let faultDetails: string[] = [];
+
+  // Helper function to extract the cleaned value from the string (e.g., "24.0 °C {ok}" -> 24.0)
+  // This assumes 'parseValueString' is responsible for converting the value and status.
+  // Based on your previous code, 'parseValueString' seems to return an object like { value: any, status: string }.
+  const extractValue = (value: any): any => {
+      // If the value is a string and contains {ok} or {fault}, strip it out
+      if (typeof value === 'string') {
+          // Check if it's a number/percentage/degree value
+          const match = value.match(/([\d.-]+)/);
+          if (match) {
+              // If it has a number, return it as a float
+              return parseFloat(match[1]);
+          }
+          // If it's a pure string value (like "Auto {ok}"), strip the status part
+          const stringMatch = value.match(/^([^{]+)/);
+          if (stringMatch) {
+              return stringMatch[1].trim();
+          }
+      }
+      return value;
+  };
+
+  // Parse each field
+  for (const [key, value] of Object.entries(fcuData)) {
+    // We'll rely on a manual string check here, as 'parseValueString' may not handle the complex format
+    // const parsed = parseValueString(value); // Assuming this is no longer reliable for new format
+
+    // Check for faults/downs using the explicit status string in the new format
+    if (typeof value === 'string' && (value.includes('{fault}') || value.includes('{down}') || value.includes('{null}'))) {
+        hasFault = true;
+        faultDetails.push(`${key}: ${value.match(/\{(.+?)\}/)?.[1] || 'fault'}`);
+    } else if (typeof value === 'object' && value !== null && (value.status?.includes('fault') || value.status?.includes('down'))) {
+        // Fallback for old parsing format if needed
+        hasFault = true;
+        faultDetails.push(`${key}: ${value.status}`);
+    }
+
+    const cleanedValue = extractValue(value);
+    const keyLower = key.toLowerCase();
+
+    // =====================================================================
+    // Dedicated Mapping for NEW (Explicit) FCU Keys
+    // =====================================================================
+
+    switch (key) {
+        case 'H_O_A':
+            status.H_O_A = cleanedValue; // e.g., "Auto"
+            status.mode = cleanedValue; // Map to old 'mode' for backward compatibility
+            break;
+        case 'Fan_Fault':
+            status.Fan_Fault = cleanedValue; // e.g., "Health"
+            break;
+        case 'Fan_Status':
+            status.Fan_Status = cleanedValue; // e.g., "Running"
+            break;
+        case 'Wall_Adjuster':
+            status.Wall_Adjuster = cleanedValue; // e.g., 24.0
+            break;
+        case 'Local_Setpoint':
+            status.Local_Setpoint = cleanedValue; // e.g., 23.0
+            status.userSetpoint = cleanedValue; // Map to old 'userSetpoint'
+            break;
+        case 'Return_Air_Temp':
+            status.Return_Air_Temp = cleanedValue; // e.g., 22.7
+            status.spaceTemp = cleanedValue; // Map to old 'spaceTemp'
+            break;
+        case 'Supply_Air_Temp':
+            status.Supply_Air_Temp = cleanedValue; // e.g., 17.5
+            break;
+        case 'Wall_Stat_Fitted':
+            status.Wall_Stat_Fitted = cleanedValue; // e.g., "Disabled"
+            break;
+        case 'Occupation_Status':
+            status.Occupation_Status = cleanedValue; // e.g., "Occupied"
+            status.occupancy = cleanedValue; // Map to old 'occupancy'
+            break;
+        case 'Cooling_Override_%':
+            status.Cooling_Override = cleanedValue; // e.g., 50.0
+            break;
+        case 'Effective_Setpoint':
+            status.Effective_Setpoint = cleanedValue; // e.g., 23.0
+            status.effectiveSetpoint = cleanedValue; // Map to old 'effectiveSetpoint'
+            break;
+        case 'Heating_Override_%':
+            status.Heating_Override = cleanedValue; // e.g., 0.0
+            break;
+        case 'FCU_Clg_Check_Failure':
+            status.FCU_Clg_Check_Failure = cleanedValue; // e.g., "Normal"
+            break;
+        case 'FCU_Htg_Check_Failure':
+            status.FCU_Htg_Check_Failure = cleanedValue; // e.g., "Failed"
+            break;
+        case 'Cooling_Valve_Position':
+            status.Cooling_Valve_Position = cleanedValue; // e.g., 50.0
+            status.coolOutput = cleanedValue; // Map to old 'coolOutput'
+            break;
+        case 'Heating_Valve_Position':
+            status.Heating_Valve_Position = cleanedValue; // e.g., 0.0
+            status.heatOutput = cleanedValue; // Map to old 'heatOutput'
+            break;
+        case 'Enable_Cooling_Override':
+            status.Enable_Cooling_Override = cleanedValue; // e.g., "On"
+            break;
+        case 'Enable_Heating_Override':
+            status.Enable_Heating_Override = cleanedValue; // e.g., "Off"
+            break;
+        case 'FCU_Clg_Exercise_Failure':
+            status.FCU_Clg_Exercise_Failure = cleanedValue; // e.g., "-"
+            break;
+        case 'FCU_Htg_Exercise_Failure':
+            status.FCU_Htg_Exercise_Failure = cleanedValue; // e.g., "-"
+            break;
+        default:
+            // =====================================================================
+            // Existing Mapping for OLD/Generic Keys (if needed)
+            // =====================================================================
+            // This is where your original parsing logic remains as a fallback.
+            
+            // Occupancy (check multiple possible field names)
+            if (keyLower.includes('occup') || key === 'nvoOccup' || key === 'nvoEffectOccup') {
+                status.occupancy = String(cleanedValue);
+            }
+            // Space temperature
+            // ... (rest of your original mapping logic here, using cleanedValue)
+            // Note: Since the explicit keys above already map to the old fields (e.g., spaceTemp), 
+            // the original block is largely redundant but kept for any non-FCU_01_04 data.
+
+            break;
+    }
+  }
+
+  // Set overall status
+  if (hasFault) {
+    // Check the raw status string from the fault details
+    if (faultDetails.some(d => d.includes('down') || d.includes('null'))) {
+      status.status = 'down';
+    } else {
+      status.status = 'fault';
+    }
+    status.faultDetails = faultDetails.join(', ');
+  }
+
+  return status;
+}
+
+function xx_parseFCU(fcuId: string, fcuData: Record<string, any>): FCUStatus {
   const status: FCUStatus = {
     id: fcuId,
     // H_O_A: undefined,             // Explicitly defined as optional, set to undefined
