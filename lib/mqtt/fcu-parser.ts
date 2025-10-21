@@ -21,28 +21,28 @@
 // }
 export interface FCUStatus {
   id: string;
-  H_O_A: string;
-  Fan_Fault: string;
-  Fan_Status: string;
-  Wall_Adjuster: number;
+  H_O_A?: string;
+  Fan_Fault?: string;
+  Fan_Status?: string;
+  Wall_Adjuster?: number;
   Local_Setpoint?: number;
   Return_Air_Temp?: number;
   Supply_Air_Temp?: number;
-  Wall_Stat_Fitted: string;
-  Occupation_Status: string;
+  Wall_Stat_Fitted?: string;
+  Occupation_Status?: string;
   Cooling_Override?: number;
 
   Effective_Setpoint?: number;
   
   Heating_Override?: number;
-  FCU_Clg_Check_Failure: string;
-  FCU_Htg_Check_Failure: string;
+  FCU_Clg_Check_Failure?: string;
+  FCU_Htg_Check_Failure?: string;
   Cooling_Valve_Position?: number;
   Heating_Valve_Position?: number;
-  Enable_Cooling_Override: string;
-  Enable_Heating_Override: string;
-  FCU_Clg_Exercise_Failure: string;
-  FCU_Htg_Exercise_Failure: string;
+  Enable_Cooling_Override?: string;
+  Enable_Heating_Override?: string;
+  FCU_Clg_Exercise_Failure?: string;
+  FCU_Htg_Exercise_Failure?: string;
   ////////////////////////////   -leave these here so that the old code will still run. hopefully
   occupancy?: string;
   spaceTemp?: number;
