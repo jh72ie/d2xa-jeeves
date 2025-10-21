@@ -113,6 +113,37 @@ function parseValueString(valueStr: string): {
 function parseFCU(fcuId: string, fcuData: Record<string, any>): FCUStatus {
   const status: FCUStatus = {
     id: fcuId,
+    H_O_A: undefined,             // Explicitly defined as optional, set to undefined
+    Fan_Fault: undefined,         // ... and so on for all properties
+    Fan_Status: undefined,
+    Wall_Adjuster: undefined,     // undefined for optional number
+    Local_Setpoint: undefined,
+    Return_Air_Temp: undefined,
+    Supply_Air_Temp: undefined,
+    Wall_Stat_Fitted: undefined,
+    Occupation_Status: undefined,
+    Cooling_Override: undefined,
+    Effective_Setpoint: undefined, 
+    Heating_Override: undefined,
+    FCU_Clg_Check_Failure: undefined,
+    FCU_Htg_Check_Failure: undefined,
+    Cooling_Valve_Position: undefined,
+    Heating_Valve_Position: undefined,
+    Enable_Cooling_Override: undefined,
+    Enable_Heating_Override: undefined,
+    FCU_Clg_Exercise_Failure: undefined,
+    FCU_Htg_Exercise_Failure: undefined,
+    occupancy: undefined,
+    spaceTemp: undefined,
+    effectiveSetpoint: undefined,
+    userSetpoint: undefined,
+    heatOutput: undefined,
+    coolOutput: undefined,
+    fanSpeed: undefined,
+    fanState: undefined,
+    mode: undefined,
+    faultDetails: undefined,
+
     status: 'ok',
     rawData: fcuData,
   };
