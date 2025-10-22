@@ -242,7 +242,7 @@ export async function GET(): Promise<Response> {
                 insertPromises.push(
                   insertTick({
                     sensorId: streamId,
-                    ts: rawData_timestamp),
+                    ts: rawData_timestamp,
                     value: value,
                   }).then(() => savedStreams.push(streamId))
                   .catch((err) => console.error(`Failed to save ${streamId}:`, err))
