@@ -203,26 +203,17 @@ export async function GET(): Promise<Response> {
 
 
             const derivedMetrics: Array<[string, number | undefined]> = [
-              ['parsed-H_O_A'.toLowerCase(), targetFCU.H_O_A?.toLowerCase() === 'hand' ? 0 : targetFCU.H_O_A?.toLowerCase() === 'off' ? 1 : 2],
-              ['parsed-Fan_Fault'.toLowerCase(), targetFCU.Fan_Fault?.toLowerCase() === 'ok' ? 0 : targetFCU.Fan_Fault?.toLowerCase() === 'fault' ? 1 : 2],
-              ['parsed-Fan_Status'.toLowerCase(), targetFCU.Fan_Status?.toLowerCase() === 'running' ? 0 : targetFCU.Fan_Status?.toLowerCase() === 'stop' ? 1 : 2],
-              ['parsed-Wall_Adjuster'.toLowerCase(), targetFCU.Wall_Adjuster],
-              ['parsed-Local_Setpoint'.toLowerCase(), targetFCU.Local_Setpoint],
-              ['parsed-Return_Air_Temp'.toLowerCase(), targetFCU.Return_Air_Temp],
-              ['parsed-Supply_Air_Temp'.toLowerCase(), targetFCU.Supply_Air_Temp],
-              ['parsed-Wall_Stat_Fitted'.toLowerCase(), targetFCU.Wall_Stat_Fitted?.toLowerCase() === 'disabled' ? 0 : 1],
-              ['parsed-Occupation_Status'.toLowerCase(), targetFCU.Occupation_Status?.toLowerCase() === 'occupied' ? 0 : 1],
-              ['parsed-Cooling_Override_%'.toLowerCase(), targetFCU.Cooling_Override],
-              ['parsed-Effective_Setpoint'.toLowerCase(), targetFCU.Effective_Setpoint],
-              ['parsed-Heating_Override_%'.toLowerCase(), targetFCU.Heating_Override],
-              ['parsed-FCU_Clg_Check_Failure'.toLowerCase(), targetFCU.FCU_Clg_Check_Failure?.toLowerCase() === 'normal' ? 0 : 1],
-              ['parsed-FCU_Htg_Check_Failure'.toLowerCase(), targetFCU.FCU_Htg_Check_Failure?.toLowerCase() === 'normal' ? 0 : 1],
-              ['parsed-Cooling_Valve_Position'.toLowerCase(), targetFCU.Cooling_Valve_Position],
-              ['parsed-Heating_Valve_Position'.toLowerCase(), targetFCU.Heating_Valve_Position],
-              ['parsed-Enable_Cooling_Override'.toLowerCase(), targetFCU.Enable_Cooling_Override?.toLowerCase() === 'on' ? 0 : 1],
-              ['parsed-Enable_Heating_Override'.toLowerCase(), targetFCU.Enable_Heating_Override?.toLowerCase() === 'on' ? 0 : 1],
-              // ['parsed-FCU_Clg_Exercise_Failure'.toLowerCase(), targetFCU.FCU_Clg_Exercise_Failure],
-              // ['parsed-FCU_Htg_Exercise_Failure'.toLowerCase(), targetFCU.FCU_Htg_Exercise_Failure],
+                ['parsed-hoa', targetFCU.H_O_A === 'Hand' ? 0 : targetFCU.H_O_A === 'Off' ? 1 : 2],
+                ['parsed-fanfault', targetFCU.Fan_Fault === 'Ok' ? 0 : targetFCU.Fan_Fault === 'Fault' ? 1 : 2],
+                ['parsed-fanstatus', targetFCU.Fan_Status === 'Running' ? 0 : targetFCU.Fan_Status === 'Stop' ? 1 : 2],
+                ['parsed-wallstatfitted', targetFCU.Wall_Stat_Fitted === 'Disabled' ? 0 : 1],
+                ['parsed-occupationstatus', targetFCU.Occupation_Status === 'Occupied' ? 0 : 1],
+                ['parsed-fcuclgcheckfailure', targetFCU.FCU_Clg_Check_Failure === 'Normal' ? 0 : 1],
+                ['parsed-fcuhtgcheckfailure', targetFCU.FCU_Htg_Check_Failure === 'Normal' ? 0 : 1],
+                ['parsed-enablecoolingoverride', targetFCU.Enable_Cooling_Override === 'On' ? 0 : 1],
+                ['parsed-enableheatingoverride', targetFCU.Enable_Heating_Override === 'On' ? 0 : 1],
+                // ['parsed-FCU_Clg_Exercise_Failure'.toLowerCase(), targetFCU.FCU_Clg_Exercise_Failure],
+                // ['parsed-FCU_Htg_Exercise_Failure'.toLowerCase(), targetFCU.FCU_Htg_Exercise_Failure],
           ];
     
 

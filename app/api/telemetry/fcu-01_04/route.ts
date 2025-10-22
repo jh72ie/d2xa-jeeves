@@ -20,6 +20,7 @@ export async function GET() {
     const streamIdsResult = await db
       .selectDistinct({ sensorId: TelemetryTick.sensorId })
       .from(TelemetryTick)
+      // .where(sql`${TelemetryTick.sensorId} LIKE 'fcu-201-%' AND ${TelemetryTick.ts} > NOW() - INTERVAL '1 hour'`);
       .where(sql`${TelemetryTick.sensorId} LIKE 'fcu-01_04-%' AND ${TelemetryTick.ts} > NOW() - INTERVAL '1 hour'`);
 
     const streamIds = streamIdsResult.map(r => r.sensorId);
@@ -52,10 +53,10 @@ export async function GET() {
     // Organize streams by category
     const categorized = {
       temperature: streamData.filter(s =>
-        s.streamId.includes('temp') || s.streamId.includes('setpoint') || s.streamId.includes('setpt')
+        s.streamId.includes('temp') || s.streamId.includes('setpoint') || s.streamId.includes('setpt')|| s.streamId.includes('adjuster')
       ),
       valves: streamData.filter(s =>
-        s.streamId.includes('heat') || s.streamId.includes('cool')
+        s.streamId.includes('enableheatingoverride') || s.streamId.includes('enablecoolingoverride') || s.streamId.includes('wallstatfitted')
       ),
       fan: streamData.filter(s =>
         s.streamId.includes('fan')
@@ -70,8 +71,10 @@ export async function GET() {
         !s.streamId.includes('temp') &&
         !s.streamId.includes('setpoint') &&
         !s.streamId.includes('setpt') &&
-        !s.streamId.includes('heat') &&
-        !s.streamId.includes('cool') &&
+        !s.streamId.includes('adjuster') &&
+        !s.streamId.includes('enableheatingoverride') &&
+        !s.streamId.includes('enablecoolingoverride') &&
+        !s.streamId.includes('wallstatfitted') &&
         !s.streamId.includes('fan') &&
         !s.streamId.includes('occup') &&
         !s.streamId.includes('status')

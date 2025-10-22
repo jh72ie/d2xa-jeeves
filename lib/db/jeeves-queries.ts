@@ -28,7 +28,8 @@ import {
  * Get global Jeeves state (configuration)
  */
 export async function getJeevesState(): Promise<JeevesState | null> {
-  const [state] = await db.select().from(jeevesState).limit(1);
+//  const [state] = await db.select().from(jeevesState).limit(1);
+  const [state] = await db.select().from(jeevesState).where(eq(jeevesState.id, 'b922cf61-9339-471d-8060-ed45a2d4a997'));      // FCU_01_04
   return state || null;
 }
 
@@ -65,20 +66,25 @@ export async function ensureJeevesState(): Promise<JeevesState> {
         analysisInterval: "1hour", // Default to 1 hour (more reasonable than 5 minutes)
         monitoredStreams: [
           // Direct MQTT streams (raw sensor data)
-          "fcu-01_04-effectsetpt",      // Effective setpoint temperature
-          "fcu-01_04-spacetemp",         // Current space temperature
-          "fcu-01_04-heatoutput",        // Heat valve output %
-          "fcu-01_04-cooloutput",        // Cool valve output %
-          "fcu-01_04-setpoint",          // User setpoint
-          "fcu-01_04-effectoccup",       // Occupancy state (enum converted to numeric)
-          "fcu-01_04-fanspeedstate",     // Fan state (enum converted to numeric)
-          // Parsed streams (processed by ingestion worker)
-          "fcu-01_04-parsed-spacetemp",
-          "fcu-01_04-parsed-effectsetpoint",
-          "fcu-01_04-parsed-usersetpoint",
-          "fcu-01_04-parsed-heatoutput",
-          "fcu-01_04-parsed-cooloutput",
-          "fcu-01_04-parsed-status"
+          "fcu-01_04-parsed-hoa",
+          "fcu-01_04-parsed-fanfault",
+          "fcu-01_04-parsed-fanstatus",
+          "fcu-01_04-parsed-wallstatfitted",
+          "fcu-01_04-parsed-occupationstatus",
+          "fcu-01_04-parsed-fcuclgcheckfailure",
+          "fcu-01_04-parsed-fcuhtgcheckfailure",
+          "fcu-01_04-parsed-enablecoolingoverride",
+          "fcu-01_04-parsed-enableheatingoverride",
+          "fcu-01_04-walladjuster",
+          "fcu-01_04-localsetpoint",
+          "fcu-01_04-returnairtemp",
+          "fcu-01_04-supplyairtemp",
+          "fcu-01_04-coolingoverride",
+          "fcu-01_04-effectivesetpoint",
+          "fcu-01_04-heatingoverride",
+          "fcu-01_04-coolingoverride",
+          "fcu-01_04-coolingvalveposition",
+          "fcu-01_04-heatingvalveposition"
         ], // Comprehensive FCU-01_04 monitoring (13 streams including enum-converted fields)
       })
       .returning();
