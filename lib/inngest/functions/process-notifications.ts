@@ -23,6 +23,8 @@ export const processNotifications = inngest.createFunction(
   },
   { event: "discovery.completed" },
   async ({ event, step }) => {
+    // Added a delay to see if this is the reason it keeps retrieving older messages when it runs
+    await step.sleep('wait-for-mqtt-data', '30s');
     const { discoveryId, executionId } = event.data;
 
     console.log(`[Inngest:Coordinator] Processing discovery ${discoveryId}`);

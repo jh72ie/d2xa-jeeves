@@ -31,7 +31,10 @@ export const mqttListener = inngest.createFunction(
   { cron: '* * * * *' }, // Run every minute (standard cron - no seconds)
   async ({ step }) => {
 
-    return await step.run('listen-to-mqtt', async () => {
+          // Added a delay to see if this is the reason it keeps retrieving older messages when it runs
+      await step.sleep('wait-for-mqtt-data', '30s');
+
+      return await step.run('listen-to-mqtt', async () => {
       console.log('[MQTT Listener] Starting MQTT connection...');
 
       // Connect to Redis

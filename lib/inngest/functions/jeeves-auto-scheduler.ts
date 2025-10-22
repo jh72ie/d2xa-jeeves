@@ -17,7 +17,10 @@ export const jeevesAutoScheduler = inngest.createFunction(
   },
   { cron: '*/5 * * * *' }, // Every 5 minutes
   async ({ step }) => {
-    return await step.run('check-and-run-jeeves', async () => {
+      // Added a delay to see if this is the reason it keeps retrieving older messages when it runs
+      await step.sleep('wait-for-mqtt-data', '30s');
+
+      return await step.run('check-and-run-jeeves', async () => {
       console.log('[Jeeves Scheduler] Checking if analysis is due...');
 
       try {

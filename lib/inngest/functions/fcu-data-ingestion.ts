@@ -104,7 +104,10 @@ export const fcuDataIngestion = inngest.createFunction(
   },
   { cron: '*/5 * * * *' }, // Every 5 minutes (matches MQTT broker's data arrival frequency)
   async ({ step }) => {
-    return await step.run('ingest-fcu-data', async () => {
+      // Added a delay to see if this is the reason it keeps retrieving older messages when it runs
+      await step.sleep('wait-for-mqtt-data', '30s');
+      
+      return await step.run('ingest-fcu-data', async () => {
       const instanceId = `worker-${Date.now()}-${Math.random().toString(36).substring(7)}`;
       console.log(`[FCU Ingestion] 🔍 INSTANCE: ${instanceId} - Starting MQTT data collection...`);
 
@@ -223,6 +226,7 @@ export const fcuDataIngestion = inngest.createFunction(
                 fcuCount: parsed.totalCount,
               };
               console.log(`[FCUK Ingestion] 🔍 Message received:`, messageFingerprint);
+              console.log(`[FCUK Ingestion] Payload Timestamp ${rawData.timestamp}`);
 
               console.log(`[FCU Ingestion] Received ${parsed.totalCount} FCUs, ${parsed.faultCount} faults`);
 
