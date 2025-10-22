@@ -10,7 +10,7 @@
 
 import { inngest } from "@/lib/inngest/client";
 import mqtt from "mqtt";
-import { parseMQTTMessage } from "@/lib/mqtt/fcu-parser";
+import { parseMQTTMessage, parseCustomTimestamp, toSafeISOString } from "@/lib/mqtt/fcu-parser";
 import { insertTick } from "@/lib/db/telemetry-ops";
 import { createClient } from "redis";
 import { getJeevesState } from "@/lib/db/jeeves-queries";
@@ -95,100 +95,6 @@ function extractNumericValue(valueStr: any): number | null {
   return null; // Truly non-numeric
 }
 
-
-function parseCustomTimestamp(dateString: string): Date | null {
-  if (!dateString) return null;
-  
-  try {
-    // Try ISO 8601 format first (already in UTC)
-    const isoDate = new Date(dateString);
-    if (!isNaN(isoDate.getTime())) {
-      return isoDate;
-    }
-    
-    // Custom format: '21-Oct-25 8:45 PM BST'
-    const customFormatRegex = /^(\d{1,2})-([A-Za-z]{3})-(\d{2})\s+(\d{1,2}):(\d{2})\s+(AM|PM)\s+([A-Z]{3})$/i;
-    const match = dateString.match(customFormatRegex);
-    
-    if (match) {
-      const [, day, monthStr, year, hour, minute, ampm, timezone] = match;
-      
-      // Convert month name to number
-      const monthMap: Record<string, number> = {
-        jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
-        jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
-      };
-      
-      const month = monthMap[monthStr.toLowerCase()];
-      if (month === undefined) return null;
-      
-      // Convert 2-digit year to 4-digit (assuming 20xx)
-      const fullYear = 2000 + parseInt(year, 10);
-      
-      // Convert 12-hour to 24-hour format
-      let hour24 = parseInt(hour, 10);
-      if (ampm.toUpperCase() === 'PM' && hour24 !== 12) {
-        hour24 += 12;
-      } else if (ampm.toUpperCase() === 'AM' && hour24 === 12) {
-        hour24 = 0;
-      }
-      
-      // Timezone offset map (hours to subtract from local time to get UTC)
-      const timezoneOffsets: Record<string, number> = {
-        'BST': 1,   // British Summer Time (UTC+1)
-        'GMT': 0,   // Greenwich Mean Time (UTC+0)
-        'UTC': 0,   // UTC
-        'EST': -5,  // Eastern Standard Time (UTC-5)
-        'EDT': -4,  // Eastern Daylight Time (UTC-4)
-        'PST': -8,  // Pacific Standard Time (UTC-8)
-        'PDT': -7,  // Pacific Daylight Time (UTC-7)
-        'CET': 1,   // Central European Time (UTC+1)
-        'CEST': 2,  // Central European Summer Time (UTC+2)
-      };
-      
-      const tzOffset = timezoneOffsets[timezone.toUpperCase()] ?? 0;
-      
-      // Create UTC date by using Date.UTC()
-      // Subtract timezone offset to convert local time to UTC
-      const utcDate = new Date(Date.UTC(
-        fullYear,
-        month,
-        parseInt(day, 10),
-        hour24 - tzOffset,  // Adjust for timezone
-        parseInt(minute, 10),
-        0,
-        0
-      ));
-      
-      return isNaN(utcDate.getTime()) ? null : utcDate;
-    }
-    
-    return null;
-  } catch (error) {
-    console.error('[FCU Ingestion] Error parsing timestamp:', error);
-    return null;
-  }
-}
-
-// // Test examples:
-// console.log(parseCustomTimestamp("2025-10-21T19:47:24.238Z"));
-// // Output: 2025-10-21T19:47:24.238Z (already UTC)
-
-// console.log(parseCustomTimestamp("21-Oct-25 8:40 PM BST")?.toISOString());
-// // Output: 2025-10-21T19:40:00.000Z (8:40 PM BST = 7:40 PM UTC)
-
-// console.log(parseCustomTimestamp("21-Oct-25 8:40 AM GMT")?.toISOString());
-// Output: 2025-10-21T08:40:00.000Z (8:40 AM GMT = 8:40 AM UTC)
-
-function toSafeISOString(dateValue: any): string {
-  const parsed = typeof dateValue === 'string' 
-    ? parseCustomTimestamp(dateValue) 
-    : new Date(dateValue);
-    
-  return parsed && !isNaN(parsed.getTime())
-    ? parsed.toISOString()
-    : new Date().toISOString();
-}
 
 export const fcuDataIngestion = inngest.createFunction(
   {
@@ -292,36 +198,37 @@ export const fcuDataIngestion = inngest.createFunction(
               const rawData = JSON.parse(payload.toString());
               const parsed = parseMQTTMessage(rawData);
 
-          const dataDate = parseCustomTimestamp(rawData.timestamp);   
-          if (!dataDate) {
-              console.error(`[FCU Ingestion] ❌ Invalid timestamp format received: ${rawData.timestamp}`);
-              clearTimeout(timeout);
-              client!.end();
-              if (redis) await redis.disconnect();
-              resolve({
-                  status: 'error_timestamp',
-                  instanceId,
-                  message: `Invalid timestamp format: ${rawData.timestamp}`,
-                  currentTime: new Date().toISOString(),
-              });
-              return;
-          }
-          // ---------------------------------------------------
+              // ---------------------------------------------------
+              const rawData_timestamp = parseCustomTimestamp(rawData.timestamp);   
+              if (!rawData_timestamp) {
+                  console.error(`[FCU Ingestion] ❌ Invalid timestamp format received: ${rawData.timestamp}`);
+                  clearTimeout(timeout);
+                  client!.end();
+                  if (redis) await redis.disconnect();
+                  resolve({
+                      status: 'error_timestamp',
+                      instanceId,
+                      message: `Invalid timestamp format: ${rawData.timestamp}`,
+                      currentTime: new Date().toISOString(),
+                  });
+                  return;
+              }
+              // ---------------------------------------------------
 
               // 🔍 DIAGNOSTIC: Log message fingerprint to detect duplicates
               const messageFingerprint = {
-                timestamp: rawData.timestamp,
+                timestamp: rawData_timestamp,
                 receivedAt: new Date().toISOString(),
                 messageSize: payload.length,
                 fcuCount: parsed.totalCount,
               };
-              console.log(`[FCU Ingestion] 🔍 Message received:`, messageFingerprint);
+              console.log(`[FCUK Ingestion] 🔍 Message received:`, messageFingerprint);
 
               console.log(`[FCU Ingestion] Received ${parsed.totalCount} FCUs, ${parsed.faultCount} faults`);
 
               // ⏰ VALIDATE TIMESTAMP: Reject if too old OR in the future
               //const dataAge = Date.now() - new Date(rawData.timestamp).getTime();
-              const dataAge = Date.now() - dataDate.getTime(); 
+              const dataAge = Date.now() - rawData_timestamp.getTime(); 
 
               const maxAge = 10 * 60 * 1000; // 10 minutes old
               const maxFuture = 2 * 60 * 1000; // 2 minutes in future (allow small clock drift)
@@ -338,7 +245,7 @@ export const fcuDataIngestion = inngest.createFunction(
                   status: 'skipped_stale',
                   instanceId,
                   reason: `Data too old (${Math.round(dataAge / 60000)} minutes)`,
-                  timestamp: rawData.timestamp,
+                  timestamp: rawData_timestamp,
                   currentTime: new Date().toISOString(),
                 });
                 return;
@@ -356,7 +263,7 @@ export const fcuDataIngestion = inngest.createFunction(
                   status: 'skipped_future',
                   instanceId,
                   reason: `Data from future (${Math.round(-dataAge / 60000)} minutes ahead)`,
-                  timestamp: rawData.timestamp,
+                  timestamp: rawData_timestamp,
                   currentTime: new Date().toISOString(),
                 });
                 return;
@@ -368,7 +275,7 @@ export const fcuDataIngestion = inngest.createFunction(
               if (redis) {
                 const lastProcessedTimestamp = await redis.get(REDIS_TIMESTAMP_KEY);
 
-                if (lastProcessedTimestamp === rawData.timestamp) {
+                if (lastProcessedTimestamp === toSafeISOString(rawData.timestamp)) {
                   console.log(`[FCU Ingestion] ⏭️  INSTANCE: ${instanceId} - Skipping DUPLICATE timestamp: ${rawData.timestamp}`);
                   console.log(`[FCU Ingestion] ⏭️  Last processed at: ${lastProcessedTimestamp}`);
                   clearTimeout(timeout);
@@ -378,7 +285,7 @@ export const fcuDataIngestion = inngest.createFunction(
                     status: 'skipped_duplicate',
                     instanceId,
                     reason: 'Already processed this timestamp',
-                    timestamp: rawData.timestamp,
+                    timestamp: rawData_timestamp,
                     lastProcessed: lastProcessedTimestamp,
                   });
                   return;
@@ -403,7 +310,7 @@ export const fcuDataIngestion = inngest.createFunction(
                   instanceId,
                   message: `Target FCU ${TARGET_FCU} not in this message`,
                   totalFCUs: parsed.totalCount,
-                  timestamp: rawData.timestamp,
+                  timestamp: rawData_timestamp,
                 });
                 return;
               }
@@ -412,9 +319,9 @@ export const fcuDataIngestion = inngest.createFunction(
               console.log(`[FCU Ingestion] 🔍 Data timestamp RAW: ${rawData.timestamp}`);
               console.log(`[FCU Ingestion] 🔍 Data timestamp TYPE: ${typeof rawData.timestamp}`);
               // console.log(`[FCU Ingestion] 🔍 Data timestamp PARSED: ${new Date(rawData.timestamp).toISOString()}`);
-              console.log(`[FCU Ingestion] 🔍 Data timestamp PARSED: ${dataDate.toISOString()}`); 
+              console.log(`[FCU Ingestion] 🔍 Data timestamp PARSED: ${rawData_timestamp.toISOString()}`); 
               //console.log(`[FCU Ingestion] 🔍 Data timestamp UNIX: ${new Date(rawData.timestamp).getTime()}`);
-              console.log(`[FCU Ingestion] 🔍 Data timestamp UNIX: ${dataDate.getTime()}`); 
+              console.log(`[FCU Ingestion] 🔍 Data timestamp UNIX: ${rawData_timestamp.getTime()}`); 
               // Save ALL fields from this FCU as separate streams
               const insertPromises: Promise<any>[] = [];
               const savedStreams: string[] = [];
@@ -430,12 +337,12 @@ export const fcuDataIngestion = inngest.createFunction(
                     insertTick({
                       sensorId: streamId,
                       // ts: new Date(rawData.timestamp),
-                      ts:dataDate,
+                      ts:rawData_timestamp,
                       value: numericValue,
                     }).then(() => {
                       savedStreams.push(streamId);
                     }).catch((err) => {
-                      console.error(`[FCU Ingestion] Failed to save ${streamId}.${dataDate}.${numericValue}:`, err);
+                      console.error(`[FCU Ingestion] Failed to save ${streamId}.${rawData_timestamp}.${numericValue}:`, err);
                     })
                   );
                 }
@@ -473,7 +380,7 @@ export const fcuDataIngestion = inngest.createFunction(
                     insertTick({
                       sensorId: streamId,
                       // ts: new Date(rawData.timestamp),
-                      ts:dataDate,
+                      ts:rawData_timestamp,
                       value: value,
                     }).then(() => {
                       savedStreams.push(streamId);
@@ -499,7 +406,7 @@ export const fcuDataIngestion = inngest.createFunction(
 
               // 🔍 DEDUPLICATION: Store this timestamp as processed (10-minute TTL) if Redis available
               if (redis) {
-                await redis.set(REDIS_TIMESTAMP_KEY, rawData.timestamp, {
+                await redis.set(REDIS_TIMESTAMP_KEY, toSafeISOString(rawData.timestamp), {
                   EX: 600, // Expire after 10 minutes (covers 5-min data cycle + buffer)
                 });
                 console.log(`[FCU Ingestion] 🔍 INSTANCE: ${instanceId} - ✓ Stored timestamp in Redis: ${rawData.timestamp}`);
@@ -533,7 +440,7 @@ export const fcuDataIngestion = inngest.createFunction(
                 targetFCU: TARGET_FCU,
                 streamsCreated: savedStreams.length,
                 streamSample: savedStreams.slice(0, 10),
-                timestamp: rawData.timestamp,
+                timestamp: rawData_timestamp,
                 totalFCUs: parsed.totalCount,
                 faultCount: parsed.faultCount,
               });

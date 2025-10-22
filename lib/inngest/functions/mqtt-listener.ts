@@ -8,6 +8,7 @@
 import { inngest } from '../client';
 import mqtt from 'mqtt';
 import { createClient } from 'redis';
+import { parseMQTTMessage, parseCustomTimestamp, toSafeISOString } from '@/lib/mqtt/fcu-parser';
 
 const MQTT_CONFIG = {
   host: '4ce6f772ed4c4e8f811eb35e20cedc91.s1.eu.hivemq.cloud',
@@ -78,9 +79,18 @@ export const mqttListener = inngest.createFunction(
             const data = JSON.parse(payload.toString());
             messageCount++;
 
+
+            // ---------------------------------------------------
+            const rawData_timestamp = parseCustomTimestamp(data.timestamp);   
+            if (!rawData_timestamp) {
+                console.error(`[XXXXXXXXXXXXXXXX] ❌ Invalid timestamp format received: ${data.timestamp}`);
+                return;
+            }
+            // ---------------------------------------------------
+  
             console.log(`[MQTT Listener] Message ${messageCount} received:`, {
               topic,
-              timestamp: data.timestamp,
+              timestamp: rawData_timestamp,
               fcuCount: data.status ? Object.keys(data.status).length : 0,
             });
 

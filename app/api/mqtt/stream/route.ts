@@ -6,6 +6,7 @@
 
 import mqtt from 'mqtt';
 import { NextRequest } from 'next/server';
+import { parseMQTTMessage, parseCustomTimestamp, toSafeISOString } from '@/lib/mqtt/fcu-parser';
 
 // MQTT Configuration
 const MQTT_CONFIG = {
@@ -79,10 +80,20 @@ export async function GET(request: NextRequest) {
           // Parse JSON payload
           const data = JSON.parse(payload.toString());
 
+
+          // ---------------------------------------------------
+          const rawData_timestamp = parseCustomTimestamp(data.timestamp);   
+          if (!rawData_timestamp) {
+              console.error(`[XXXXXXXXXXXXXXXX] ❌ Invalid timestamp format received: ${data.timestamp}`);
+              return;
+          }
+          // ---------------------------------------------------
+
+
           console.log(`[MQTT Stream] Message received on ${topic}:`, {
             measuredvalue: data.measuredvalue,
             version: data.version,
-            timestamp: data.timestamp,
+            timestamp: rawData_timestamp,
             fcuCount: data.status ? Object.keys(data.status).length : 0,
           });
 
@@ -92,7 +103,7 @@ export async function GET(request: NextRequest) {
             id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             topic,
             payload: data,
-            timestamp: data.timestamp || new Date().toISOString(),
+            timestamp: rawData_timestamp || new Date().toISOString(),
           });
 
         } catch (error: any) {

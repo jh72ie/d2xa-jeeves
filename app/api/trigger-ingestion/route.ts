@@ -7,7 +7,7 @@
 
 import { NextResponse } from 'next/server';
 import mqtt from 'mqtt';
-import { parseMQTTMessage } from '@/lib/mqtt/fcu-parser';
+import { parseMQTTMessage, parseCustomTimestamp, toSafeISOString } from '@/lib/mqtt/fcu-parser';
 import { insertTick } from '@/lib/db/telemetry-ops';
 import { createClient } from 'redis';
 import { getJeevesState } from '@/lib/db/jeeves-queries';
@@ -121,8 +121,28 @@ export async function GET(): Promise<Response> {
 
             console.log(`[Manual Ingestion] Received ${parsed.totalCount} FCUs`);
 
+
+            // ---------------------------------------------------
+            const rawData_timestamp = parseCustomTimestamp(rawData.timestamp);   
+            if (!rawData_timestamp) {
+                console.error(`[FCU Ingestion] ❌ Invalid timestamp format received: ${rawData.timestamp}`);
+                clearTimeout(timeout);
+                client!.end();
+                if (redis) await redis.disconnect();
+                resolve({
+                    status: 'error_timestamp',
+                    instanceId,
+                    message: `Invalid timestamp format: ${rawData.timestamp}`,
+                    currentTime: new Date().toISOString(),
+                });
+                return;
+            }
+            // ---------------------------------------------------
+
+
             // Validate timestamp
-            const dataAge = Date.now() - new Date(rawData.timestamp).getTime();
+            // const dataAge = Date.now() - new Date(rawData.timestamp).getTime();
+            const dataAge = Date.now() - rawData_timestamp.getTime();
             const maxAge = 10 * 60 * 1000;
             const maxFuture = 2 * 60 * 1000;
 
@@ -149,7 +169,7 @@ export async function GET(): Promise<Response> {
             // Check for duplicate
             if (redis) {
               const lastProcessed = await redis.get(REDIS_TIMESTAMP_KEY);
-              if (lastProcessed === rawData.timestamp) {
+              if (lastProcessed === toSafeISOString(rawData.timestamp)) {
                 client!.end();
                 await redis.disconnect();
                 resolve(NextResponse.json({
@@ -183,7 +203,7 @@ export async function GET(): Promise<Response> {
                 insertPromises.push(
                   insertTick({
                     sensorId: streamId,
-                    ts: new Date(rawData.timestamp),
+                    ts: rawData_timestamp,
                     value: numericValue,
                   }).then(() => savedStreams.push(streamId))
                   .catch((err) => console.error(`Failed to save ${streamId}:`, err))
@@ -216,16 +236,13 @@ export async function GET(): Promise<Response> {
                 // ['parsed-FCU_Htg_Exercise_Failure'.toLowerCase(), targetFCU.FCU_Htg_Exercise_Failure],
           ];
     
-
-
-
             for (const [metricName, value] of derivedMetrics) {
               if (value !== undefined && !isNaN(value)) {
                 const streamId = `fcu-01_04-${metricName}`;
                 insertPromises.push(
                   insertTick({
                     sensorId: streamId,
-                    ts: new Date(rawData.timestamp),
+                    ts: rawData_timestamp),
                     value: value,
                   }).then(() => savedStreams.push(streamId))
                   .catch((err) => console.error(`Failed to save ${streamId}:`, err))
@@ -237,7 +254,7 @@ export async function GET(): Promise<Response> {
 
             // Store timestamp in Redis
             if (redis) {
-              await redis.set(REDIS_TIMESTAMP_KEY, rawData.timestamp, { EX: 600 });
+              await redis.set(REDIS_TIMESTAMP_KEY, toSafeISOString(rawData.timestamp), { EX: 600 });
               await redis.set(
                 REDIS_LATEST_KEY,
                 JSON.stringify({
@@ -259,7 +276,7 @@ export async function GET(): Promise<Response> {
               instanceId,
               streamsCreated: savedStreams.length,
               streamSample: savedStreams.slice(0, 10),
-              timestamp: rawData.timestamp,
+              timestamp: rawData_timestamp,
             }));
 
           } catch (error: any) {
