@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
           // ---------------------------------------------------
           const rawData_timestamp = parseCustomTimestamp(data.timestamp);   
           if (!rawData_timestamp) {
-              console.error(`[XXXXXXXXXXXXXXXX] ❌ Invalid timestamp format received: ${data.timestamp}`);
+              console.error(`[MQTT Stream] ❌ Invalid timestamp format received: ${data.timestamp}`);
               return;
           }
           // ---------------------------------------------------

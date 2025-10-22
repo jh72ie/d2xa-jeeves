@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { parseCustomTimestamp, parseMQTTMessage, getFCUHealthSummary, type FCUStatus, type ParsedMQTTMessage } from "@/lib/mqtt/fcu-parser";
+import { parseCustomTimestamp, toSafeISOString, parseMQTTMessage, getFCUHealthSummary, type FCUStatus, type ParsedMQTTMessage } from "@/lib/mqtt/fcu-parser";
 
 interface MQTTMessage {
   id: string;
@@ -55,7 +55,7 @@ export function MQTTLiveConsole() {
         // ---------------------------------------------------
         const rawData_timestamp = parseCustomTimestamp(data.timestamp);   
         if (!rawData_timestamp) {
-            console.error(`[XXXXXXXXXXXXXXXX] ❌ Invalid timestamp format received: ${data.timestamp}`);
+            console.error(`[MQTT Console] ❌ Invalid timestamp format received: ${data.timestamp}`);
             return;
         }
         // ---------------------------------------------------
@@ -65,7 +65,7 @@ export function MQTTLiveConsole() {
             id: data.id || `msg_${Date.now()}`,
             topic: data.topic,
             payload: data.payload,
-            timestamp: rawData_timestamp,
+            timestamp: toSafeISOString(rawData_timestamp),
             receivedAt: new Date().toISOString(),
           };
 

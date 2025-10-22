@@ -83,7 +83,7 @@ export const mqttListener = inngest.createFunction(
             // ---------------------------------------------------
             const rawData_timestamp = parseCustomTimestamp(data.timestamp);   
             if (!rawData_timestamp) {
-                console.error(`[XXXXXXXXXXXXXXXX] ❌ Invalid timestamp format received: ${data.timestamp}`);
+                console.error(`[MQTT Listener] ❌ Invalid timestamp format received: ${data.timestamp}`);
                 return;
             }
             // ---------------------------------------------------

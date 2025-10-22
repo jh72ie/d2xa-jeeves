@@ -369,7 +369,7 @@ export function parseMQTTMessage(payload: any): ParsedMQTTMessage {
   // ---------------------------------------------------
   const rawData_timestamp = parseCustomTimestamp(payload.timestamp);   
   if (!rawData_timestamp) {
-      console.error(`[XXXXX-X] ❌ Invalid timestamp format received: ${payload.timestamp}`);
+      console.error(`[FCU Data Parser] ❌ Invalid timestamp format received: ${payload.timestamp}`);
   }
   // ---------------------------------------------------
 
@@ -525,7 +525,7 @@ export function parseCustomTimestamp(dateString: string): Date | null {
     
     return null;
   } catch (error) {
-    console.error('[FCU Ingestion] Error parsing timestamp:', error);
+    console.error('[FCU Data Parser] Error parsing timestamp:', error);
     return null;
   }
 }

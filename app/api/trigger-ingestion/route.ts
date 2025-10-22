@@ -121,20 +121,17 @@ export async function GET(): Promise<Response> {
 
             console.log(`[Manual Ingestion] Received ${parsed.totalCount} FCUs`);
 
-
             // ---------------------------------------------------
             const rawData_timestamp = parseCustomTimestamp(rawData.timestamp);   
             if (!rawData_timestamp) {
-                console.error(`[FCU Ingestion] ❌ Invalid timestamp format received: ${rawData.timestamp}`);
+                console.error(`[Manual Ingestion] ❌ Invalid timestamp format received: ${rawData.timestamp}`);
                 clearTimeout(timeout);
                 client!.end();
                 if (redis) await redis.disconnect();
-                resolve({
-                    status: 'error_timestamp',
-                    instanceId,
-                    message: `Invalid timestamp format: ${rawData.timestamp}`,
-                    currentTime: new Date().toISOString(),
-                });
+                resolve(NextResponse.json({
+                  status: 'error_timestamp',
+                  reason: `Invalid timestamp format: ${rawData.timestamp}`,
+                }));
                 return;
             }
             // ---------------------------------------------------
